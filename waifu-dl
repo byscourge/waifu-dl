@@ -1,0 +1,313 @@
+#!/bin/bash
+
+
+# ------------------------------------------------------------------
+# # # # # # #
+# CORE
+# # # # # # #
+# ------------------------------------------------------------------
+
+SCRIPT="$(basename "$0")" # grab script name
+
+print_err_msg() {
+  echo "$SCRIPT: $1" >&2
+  exit "${2:-1}"
+}
+
+# check if argument was passed
+[[ -z "$1" ]] && \
+  print_err_msg "No arguments passed! --help to show usage." 1
+
+
+# ------------------------------------------------------------------
+# # # # # # #
+# FUNCTIONS
+# # # # # # #
+# ------------------------------------------------------------------
+
+print_help() {
+  printf '%s\n' "
+$SCRIPT is a simple CLI tool: view or download random waifu images from waifu.im.
+
+Docs:
+  $SCRIPT --help: Show this help screen
+  $SCRIPT --nsfw help: Show nsfw help screen
+  $SCRIPT --view help: Show image viewer help screen
+
+Usage examples:
+  $SCRIPT -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
+  $SCRIPT -nb -t [ Set mode to all (NSFW+SFW) and open it with termux-open, for termux users. ]
+  $SCRIPT -ne -vc [ Set mode to only NSFW and view the image with chafa ]
+
+
+Valid flags:
+
+Short:
+  $SCRIPT -h
+  $SCRIPT -o (arg required)
+  $SCRIPT -n (arg required)
+  $SCRIPT -t
+  $SCRIPT -v (arg required)
+Long:
+  $SCRIPT --help
+  $SCRIPT --output (arg required)
+  $SCRIPT --nsfw (arg required)
+  $SCRIPT --termux
+  $SCRIPT --view (arg required)
+  
+"
+}
+
+nsfw_valid() {
+  local NSFW_V
+  for NSFW_V in "${NSFW_VALID[@]}"; do
+    [[ "$NSFW_V" == "$1" ]] && return 0
+  done
+  return 1
+}
+
+view_valid() {
+  local VIEW_V
+  for VIEW_V in "${VIEW_VALID[@]}"; do
+    [[ "$VIEW_V" == "$1" ]] && return 0
+  done
+  return 1
+}
+
+# ------------------------------------------------------------------
+# # # # # # #
+# VARIABLES
+# # # # # # #
+# ------------------------------------------------------------------
+
+# get flags
+PARAM=$(getopt -o "ho:n:tv:" -l "help,output:,nsfw:,termux,view:" -n "$SCRIPT" -- "$@")
+
+# check if getopt failed for some reason
+PARAM_RC="$?"
+[[ "$PARAM_RC" != "0" ]] && \
+  print_err_msg "Failed to parse parameters!" $PARAM_RC
+
+# API
+WAIFU_URL="https://api.waifu.im/images"
+NSFW_EXCLUSIVE_WAIFU_URL="https://api.waifu.im/images?IsNsfw=True"
+NSFW_ALL_WAIFU_URL="https://api.waifu.im/images?IsNsfw=All"
+NSFW_NONE_WAIFU_URL="https://api.waifu.im/images?IsNsfw=False"
+
+# ------------------------------------------------------------------
+# # # # # # # #
+# FLAG PARSING
+# # # # # # # #
+# ------------------------------------------------------------------
+
+eval set -- "$PARAM"
+
+OUTPUT=0
+OUTPUT_NAME=""
+
+NSFW=0
+NSFW_OPT=""
+
+NSFW_VALID=(
+  e
+  b
+  a
+  n
+  exclusive
+  both
+  all
+  none
+)
+
+VIEW=0
+VIEW_OPT=""
+
+VIEW_VALID=(
+  c
+  chafa
+)
+
+while true; do
+  case "$1" in
+
+    -h|--help)
+      print_help
+      exit 0
+      ;;
+
+    -o|--output)
+      OUTPUT=1
+      OUTPUT_NAME="$2"
+      shift 2
+      continue
+      ;;
+
+    -n|--nsfw)
+      NSFW=1
+        case "$2" in
+          h|-h|help|--help)
+            printf '%s\n' "
+  $SCRIPT: --nsfw
+
+  Set NSFW mode
+
+  Valid options:
+
+  * e (exclusive) [ Set to only NSFW media ]
+  * b (both) [ Set to both NSFW and SFW media ]
+  * a (all)  [ Set to both NSFW and SFW media ]
+  * n (none) [ Set to no NSFW media ]
+"
+            exit 0
+            ;;
+          *)
+            if nsfw_valid "$2"; then
+              NSFW_OPT="$2"
+              shift 2
+              continue
+            else
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 1
+            fi
+            ;;
+        esac
+      ;;
+
+    -v|--view)
+      VIEW=1
+        case "$2" in
+          h|-h|help|--help)
+            printf '%s\n' "
+  $SCRIPT: --view
+
+  Set VIEW mode
+
+  Valid options:
+
+  * c (chafa) [ Set to view with Chafa ]
+"
+            exit 0
+            ;;
+          *)
+            if view_valid "$2"; then
+              VIEW_OPT="$2"
+              shift 2
+              continue
+            else
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 1
+            fi
+            ;;
+        esac
+      ;;
+
+    -t|--termux)
+      TERMUX=1
+      shift
+      continue
+      ;;
+
+    --)
+      shift
+      break
+      ;;
+    *)
+      print_err_msg "Failed to parse arguments! Unknown option: $1" 1
+      ;;
+  esac
+done
+
+# ------------------------------------------------------------------
+# # # # # # #
+#   VALIDATION
+# # # # # # #
+# ------------------------------------------------------------------
+
+{
+  {
+    COMMANDS=(
+      curl
+      jq
+    )
+    MISSING_CMD=()
+    CMD_FAILED=0
+
+    for CMD in "${COMMANDS[@]}"; do
+      if ! command -v "$CMD" &>/dev/null; then
+        MISSING_CMD+=("$CMD")
+        CMD_FAILED=1
+      fi
+    done
+
+    if [[ "$CMD_FAILED" == "1" ]]; then
+      echo "$SCRIPT: Missing commands!" >&2
+      printf "\n{\n"
+      for MISSING in "${MISSING_CMD[@]}"; do
+        printf "$MISSING\n"
+      done
+      printf "}\n"
+      exit 1
+    fi
+  }
+}
+
+
+# ------------------------------------------------------------------
+# # # # # # #
+#  LOGIC
+# # # # # # #
+# ------------------------------------------------------------------
+
+# set variable for URL
+if [[ "$NSFW" != "1" ]]; then
+  WAIFU_JSON=$(curl -s "$WAIFU_URL")
+else
+  case "$NSFW_OPT" in
+    e|exclusive)
+      WAIFU_JSON=$(curl -s "$NSFW_EXCLUSIVE_WAIFU_URL")
+      ;;
+    a|all|b|both)
+      WAIFU_JSON=$(curl -s "$NSFW_ALL_WAIFU_URL")
+      ;;
+    n|none)
+      WAIFU_JSON=$(curl -s "$NSFW_NONE_WAIFU_URL")
+      ;;
+  esac
+fi
+
+# set image URL
+IMAGE_URL=$(printf '%s' "$WAIFU_JSON" | jq -r ".items[0].url")
+
+[[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" ]] && \
+  print_err_msg "Failed to fetch valid image data!" 1
+
+# save to file
+if [[ "$OUTPUT" == "1" ]]; then
+  if command -v wget &>/dev/null; then
+    wget "$IMAGE_URL" -O "$OUTPUT_NAME"
+  else
+    print_err_msg "Missing command for flag -o: wget" 1
+  fi
+fi
+
+# open on termux
+if [[ "$TERMUX" == "1" ]]; then
+  if command -v termux-open &>/dev/null; then
+    termux-open "$IMAGE_URL"
+  else
+    print_err_msg "termux-open not available!" 1
+  fi
+fi
+
+# view with chafa
+if [[ "$VIEW" == "1" ]]; then
+  if command -v chafa &>/dev/null; then
+    case "$VIEW_OPT" in
+      c|chafa)
+        curl -s "$IMAGE_URL" | chafa
+        ;;
+    esac
+  else
+    print_err_msg "Missing command for flag -v: chafa" 1
+  fi
+fi
+
+exit 0
