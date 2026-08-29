@@ -38,6 +38,7 @@ Usage examples:
   $SCRIPT -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
   $SCRIPT -nb -t [ Set mode to all (NSFW+SFW) and open it with termux-open, for termux users. ]
   $SCRIPT -ne -vc [ Set mode to only NSFW and view the image with chafa ]
+  $SCRIPT -p [ Print image URL ]
 
 
 Valid flags:
@@ -48,12 +49,14 @@ Short:
   $SCRIPT -n (arg required)
   $SCRIPT -t
   $SCRIPT -v (arg required)
+  $SCRIPT -p
 Long:
   $SCRIPT --help
   $SCRIPT --output (arg required)
   $SCRIPT --nsfw (arg required)
   $SCRIPT --termux
   $SCRIPT --view (arg required)
+  $SCRIPT --print
   
 "
 }
@@ -81,7 +84,7 @@ view_valid() {
 # ------------------------------------------------------------------
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:" -l "help,output:,nsfw:,termux,view:" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:p" -l "help,output:,nsfw:,termux,view:,print" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -205,6 +208,12 @@ while true; do
       continue
       ;;
 
+    -p|--print)
+      PRINT=1
+      shift
+      continue
+      ;;
+
     --)
       shift
       break
@@ -308,6 +317,10 @@ if [[ "$VIEW" == "1" ]]; then
   else
     print_err_msg "Missing command for flag -v: chafa" 1
   fi
+fi
+
+if [[ "$PRINT" == "1" ]]; then
+  echo "$IMAGE_URL"
 fi
 
 exit 0
