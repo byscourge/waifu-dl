@@ -321,7 +321,7 @@ if [[ "$PRINT" == "1" ]]; then
 fi
 
 # if no arguments, print url
-if [[ -z "$1" ]]; then
+if [[ -z "$1" && -z "$PRINT" ]]; then
   echo "$IMAGE_URL"
 fi
 
