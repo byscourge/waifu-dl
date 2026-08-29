@@ -14,10 +14,6 @@ print_err_msg() {
   exit "${2:-1}"
 }
 
-# check if argument was passed
-[[ -z "$1" ]] && \
-  print_err_msg "No arguments passed! --help to show usage." 1
-
 
 # ------------------------------------------------------------------
 # # # # # # #
@@ -319,7 +315,13 @@ if [[ "$VIEW" == "1" ]]; then
   fi
 fi
 
+# print statemenr
 if [[ "$PRINT" == "1" ]]; then
+  echo "$IMAGE_URL"
+fi
+
+# if no arguments, print url
+if [[ -z "$1" ]]; then
   echo "$IMAGE_URL"
 fi
 
