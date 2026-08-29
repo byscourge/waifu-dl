@@ -7,6 +7,16 @@
 # # # # # # #
 # ------------------------------------------------------------------
 
+
+# hushlogin-type implementation to hide script usage
+
+KILLSWITCH="$HOME/.waifulock"
+if [[ -f "$KILLSWITCH" ]]; then
+  echo "This command does nothing. Have a wonderful day!"
+  exit 0
+fi
+
+
 SCRIPT="$(basename "$0")" # grab script name
 
 print_err_msg() {
