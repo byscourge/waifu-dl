@@ -104,6 +104,8 @@ eval set -- "$PARAM"
 OUTPUT=0
 OUTPUT_NAME=""
 
+PRINT=0
+
 NSFW=0
 NSFW_OPT=""
 
