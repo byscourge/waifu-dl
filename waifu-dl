@@ -317,7 +317,7 @@ if [[ "$VIEW" == "1" ]]; then
 
       s|sixel)
         command -v img2sixel &>/dev/null || {
-        print_err_msg "Missing library for flag -vc: libsixel" 1
+        print_err_msg "Missing library for flag -vs: libsixel" 1
         }
 
         curl -s "$IMAGE_URL" | img2sixel
