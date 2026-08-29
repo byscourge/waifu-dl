@@ -29,6 +29,7 @@ Docs:
   $SCRIPT --help: Show this help screen
   $SCRIPT --nsfw help: Show nsfw help screen
   $SCRIPT --view help: Show image viewer help screen
+  $SCRIPT --id help: Show id lookup help screen
 
 Usage examples:
   $SCRIPT -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
@@ -46,6 +47,7 @@ Short:
   $SCRIPT -t
   $SCRIPT -v (arg required)
   $SCRIPT -p
+  $SCRIPT -i (arg required)
 Long:
   $SCRIPT --help
   $SCRIPT --output (arg required)
@@ -53,6 +55,7 @@ Long:
   $SCRIPT --termux
   $SCRIPT --view (arg required)
   $SCRIPT --print
+  $SCRIPT --id (arg required)
   
 "
 }
@@ -80,7 +83,7 @@ view_valid() {
 # ------------------------------------------------------------------
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:p" -l "help,output:,nsfw:,termux,view:,print" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:" -l "help,output:,nsfw:,termux,view:,print,id:" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -89,6 +92,7 @@ PARAM_RC="$?"
 
 # API
 WAIFU_URL="https://api.waifu.im/images"
+
 NSFW_EXCLUSIVE_WAIFU_URL="${WAIFU_URL}?IsNsfw=True"
 NSFW_ALL_WAIFU_URL="${WAIFU_URL}?IsNsfw=All"
 NSFW_NONE_WAIFU_URL="${WAIFU_URL}?IsNsfw=False"
@@ -103,6 +107,9 @@ eval set -- "$PARAM"
 
 OUTPUT=0
 OUTPUT_NAME=""
+
+USE_ID=0
+ID_OPT=""
 
 PRINT=0
 
@@ -129,6 +136,8 @@ VIEW_VALID=(
   chafa
   sixel
 )
+
+TERMUX=0
 
 while true; do
   case "$1" in
@@ -215,6 +224,33 @@ while true; do
       continue
       ;;
 
+    -i|--id)
+      USE_ID=1
+      case "$2" in
+        h|-h|help|--help)
+          printf '%s\n' "
+$SCRIPT: --id
+
+View an image from a specific ID
+
+Usage example (ID):
+  $SCRIPT -i 7727
+
+To view:
+  $SCRIPT -vc -i 7727
+
+# replace 7727 with any number. 7727 is a working example, though (real photo), so feel free to use it.
+"
+          exit 0
+          ;;
+        *)
+          ID_OPT="$2"
+          shift 2
+          continue
+          ;;
+          esac
+        ;;
+
     --)
       shift
       break
@@ -267,24 +303,33 @@ done
 # ------------------------------------------------------------------
 
 # set variable for URL
-if [[ "$NSFW" != "1" ]]; then
-  WAIFU_JSON=$(curl -s "$WAIFU_URL")
+if [[ "$USE_ID" == "1" ]]; then
+  for EXT in png jpeg jpg gif; do
+    if curl -sfI -o /dev/null "https://cdn.waifu.im/${ID_OPT}.${EXT}"; then
+      IMAGE_URL="https://cdn.waifu.im/${ID_OPT}.${EXT}"
+      break
+    fi
+  done
 else
-  case "$NSFW_OPT" in
-    e|exclusive)
-      WAIFU_JSON=$(curl -s "$NSFW_EXCLUSIVE_WAIFU_URL")
-      ;;
-    a|all|b|both)
-      WAIFU_JSON=$(curl -s "$NSFW_ALL_WAIFU_URL")
-      ;;
-    n|none)
-      WAIFU_JSON=$(curl -s "$NSFW_NONE_WAIFU_URL")
-      ;;
-  esac
-fi
+  if [[ "$NSFW" != "1" ]]; then
+    WAIFU_JSON=$(curl -s "$WAIFU_URL")
+  else
+    case "$NSFW_OPT" in
+      e|exclusive)
+        WAIFU_JSON=$(curl -s "$NSFW_EXCLUSIVE_WAIFU_URL")
+        ;;
+      a|all|b|both)
+        WAIFU_JSON=$(curl -s "$NSFW_ALL_WAIFU_URL")
+        ;;
+      n|none)
+        WAIFU_JSON=$(curl -s "$NSFW_NONE_WAIFU_URL")
+        ;;
+    esac
+  fi
 
-# set image URL
-IMAGE_URL=$(printf '%s' "$WAIFU_JSON" | jq -r ".items[0].url")
+  # set image URL
+  IMAGE_URL=$(printf '%s' "$WAIFU_JSON" | jq -r ".items[0].url")
+fi
 
 [[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" ]] && \
   print_err_msg "Failed to fetch valid image data!" 1
