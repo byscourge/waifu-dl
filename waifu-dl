@@ -89,9 +89,9 @@ PARAM_RC="$?"
 
 # API
 WAIFU_URL="https://api.waifu.im/images"
-NSFW_EXCLUSIVE_WAIFU_URL="https://api.waifu.im/images?IsNsfw=True"
-NSFW_ALL_WAIFU_URL="https://api.waifu.im/images?IsNsfw=All"
-NSFW_NONE_WAIFU_URL="https://api.waifu.im/images?IsNsfw=False"
+NSFW_EXCLUSIVE_WAIFU_URL="${WAIFU_URL}?IsNsfw=True"
+NSFW_ALL_WAIFU_URL="${WAIFU_URL}?IsNsfw=All"
+NSFW_NONE_WAIFU_URL="${WAIFU_URL}?IsNsfw=False"
 
 # ------------------------------------------------------------------
 # # # # # # # #
