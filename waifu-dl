@@ -123,7 +123,9 @@ VIEW_OPT=""
 
 VIEW_VALID=(
   c
+  s
   chafa
+  sixel
 )
 
 while true; do
@@ -183,6 +185,7 @@ while true; do
   Valid options:
 
   * c (chafa) [ Set to view with Chafa ]
+  * s (sixel) [ Set to view with Img2sixel ]
 "
             exit 0
             ;;
@@ -304,18 +307,25 @@ fi
 
 # view with chafa
 if [[ "$VIEW" == "1" ]]; then
-  if command -v chafa &>/dev/null; then
     case "$VIEW_OPT" in
       c|chafa)
+        command -v chafa &>/dev/null || {
+        print_err_msg "Missing command for flag -vc: chafa" 1
+        }
         curl -s "$IMAGE_URL" | chafa
         ;;
+
+      s|sixel)
+        command -v img2sixel &>/dev/null || {
+        print_err_msg "Missing library for flag -vc: libsixel" 1
+        }
+
+        curl -s "$IMAGE_URL" | img2sixel
+        ;;
     esac
-  else
-    print_err_msg "Missing command for flag -v: chafa" 1
-  fi
 fi
 
-# print statemenr
+# print statement
 if [[ "$PRINT" == "1" ]]; then
   echo "$IMAGE_URL"
 fi
