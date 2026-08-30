@@ -81,35 +81,37 @@ Long:
 "
 }
 
-nsfw_valid() {
-  local NSFW_V
-  for NSFW_V in "${NSFW_VALID[@]}"; do
-    [[ "$NSFW_V" == "$1" ]] && return 0
+name_valid() {
+  local XD
+  local -n X_ARR="$1"
+
+  for XD in "${X_ARR[@]}"; do
+    [[ "$XD" == "$2" ]] && return 0
   done
+  return 1
+}
+
+nsfw_valid() {
+  name_valid NSFW_VALID "$1" && \
+    return 0
   return 1
 }
 
 view_valid() {
-  local VIEW_V
-  for VIEW_V in "${VIEW_VALID[@]}"; do
-    [[ "$VIEW_V" == "$1" ]] && return 0
-  done
+  name_valid VIEW_VALID "$1" && \
+    return 0
   return 1
 }
 
 tag_valid() {
-  local TAG_V
-  for TAG_V in "${TAG_VALID[@]}"; do
-    [[ "$TAG_V" == "$1" ]] && return 0
-  done
+  name_valid TAG_VALID "$1" && \
+    return 0
   return 1
 }
 
 type_valid() {
-  local TYPE_V
-  for TYPE_V in "${TYPE_VALID[@]}"; do
-    [[ "$TYPE_V" == "$1" ]] && return 0
-  done
+  name_valid TYPE_VALID "$1" && \
+    return 0
   return 1
 }
 
@@ -307,25 +309,13 @@ while true; do
           printf '%s\n' "
 $SCRIPT: --id
 
-View an image from a specific ID
+View an image from a specific ID ( 4-digit number )
 
-Usage example (ID):
-  $SCRIPT -i 7727
-  $SCRIPT -i 6900
-  $SCRIPT -i 6992
-  $SCRIPT -i 6873
-  $SCRIPT -i 7124
-  $SCRIPT -i 5469
-  $SCRIPT -i 8357
+Usage:
+  $SCRIPT -i xxxx (numbers)
 
-To view:
-  $SCRIPT -vc -i 7727
-  $SCRIPT -vc -i 6900
-  $SCRIPT -vc -i 6992
-  $SCRIPT -vc -i 6873
-  $SCRIPT -vc -i 7124
-  $SCRIPT -vc -i 5469
-  $SCRIPT -vc -i 8357
+ID examples:
+  6900, 6992, 6873, 7124, 5469, 8357, 7799
 
 # use any other number. those are working examples, though (REAL IMAGES), so feel free to use those.
 "
