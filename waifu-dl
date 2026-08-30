@@ -287,17 +287,17 @@ View an image from a specific ID
 
 Usage example (ID):
   $SCRIPT -i 7727
-  $SCRIPT -i 7727
   $SCRIPT -i 6900
   $SCRIPT -i 6992
   $SCRIPT -i 6873
+  $SCRIPT -i 7124
 
 To view:
-  $SCRIPT -vc -i 7727
   $SCRIPT -vc -i 7727
   $SCRIPT -vc -i 6900
   $SCRIPT -vc -i 6992
   $SCRIPT -vc -i 6873
+  $SCRIPT -vc -i 7124
 
 # use any other number. those are working examples, though (REAL IMAGES), so feel free to use those.
 "
