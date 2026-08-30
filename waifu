@@ -276,10 +276,6 @@ PARAM_RC="$?"
 # API
 WAIFU_URL="https://api.waifu.im/images"
 
-NSFW_EXCLUSIVE_WAIFU_URL="${WAIFU_URL}?isNsfw=True"
-NSFW_ALL_WAIFU_URL="${WAIFU_URL}?isNsfw=All"
-NSFW_NONE_WAIFU_URL="${WAIFU_URL}?isNsfw=False"
-
 # ------------------------------------------------------------------
 # # # # # # # #
 # FLAG PARSING
@@ -322,10 +318,10 @@ VIEW_VALID=(
 )
 
 TAG=0
-TAG_OPT=""
+TAG_OPTS=()
 
 EXCLUDE=0
-EXCLUDE_OPT=""
+EXCLUDE_OPTS=()
 
 TAG_VALID=(
   milf
@@ -491,7 +487,7 @@ while true; do
             ;;
           *)
             if tag_valid "$2"; then
-              TAG_OPT="$2"
+              TAG_OPTS+=("$2")
               shift 2
               continue
             else
@@ -567,7 +563,7 @@ while true; do
             ;;
           *)
             if tag_valid "$2"; then
-              EXCLUDE_OPT="$2"
+              EXCLUDE_OPTS+=("$2")
               shift 2
               continue
             else
@@ -658,99 +654,54 @@ if [[ "$USE_ID" == "1" ]]; then
     fi
   done
 else
-  if [[ "$NSFW" != "1" ]]; then
-    REQUEST_URL="$WAIFU_URL"
-  else
+  QUERY_PARAMS=()
+
+  if [[ "$NSFW" == "1" ]]; then
     case "$NSFW_OPT" in
-      e|exclusive)
-        REQUEST_URL="$NSFW_EXCLUSIVE_WAIFU_URL"
-        ;;
-      a|all|b|both)
-        REQUEST_URL="$NSFW_ALL_WAIFU_URL"
-        ;;
-      n|none)
-        REQUEST_URL="$NSFW_NONE_WAIFU_URL"
-        ;;
+      e|exclusive) QUERY_PARAMS+=("isNsfw=True") ;;
+      a|all|b|both) QUERY_PARAMS+=("isNsfw=All") ;;
+      n|none) QUERY_PARAMS+=("isNsfw=False") ;;
     esac
   fi
 
-  if [[ "$TAG" == "1" ]]; then
-    if [[ "$REQUEST_URL" == *"?"* ]]; then
-      REQUEST_URL="${REQUEST_URL}&includedTags=${TAG_OPT}"
-    else
-      REQUEST_URL="${REQUEST_URL}?includedTags=${TAG_OPT}"
-    fi
-  fi
+  for TAG_ITEM in "${TAG_OPTS[@]}"; do
+    QUERY_PARAMS+=("includedTags=${TAG_ITEM}")
+  done
 
   if [[ "$TYPE" == "1" ]]; then
     case "$TYPE_OPT" in
-      a|animated)
-        TYPE_PARAM="isAnimated=True"
-        ;;
-      s|static)
-        TYPE_PARAM="isAnimated=False"
-        ;;
-      b|both|all)
-        TYPE_PARAM="isAnimated=All"
-        ;;
+      a|animated) QUERY_PARAMS+=("isAnimated=True") ;;
+      s|static) QUERY_PARAMS+=("isAnimated=False") ;;
+      b|both|all) QUERY_PARAMS+=("isAnimated=All") ;;
     esac
-
-    if [[ "$REQUEST_URL" == *"?"* ]]; then
-      REQUEST_URL="${REQUEST_URL}&${TYPE_PARAM}"
-    else
-      REQUEST_URL="${REQUEST_URL}?${TYPE_PARAM}"
-    fi
   fi
 
   if [[ "$SORT" == "1" ]]; then
     case "$SORT_OPT" in
-      f|favorites|p|popular)
-        SORT_PARAM="orderBy=Favorites"
-        ;;
-      u|uploaded|n|newest)
-        SORT_PARAM="orderBy=UploadedAt"
-        ;;
-      r|random)
-        SORT_PARAM="orderBy=Random"
-        ;;
+      f|favorites|p|popular) QUERY_PARAMS+=("orderBy=Favorites") ;;
+      u|uploaded|n|newest) QUERY_PARAMS+=("orderBy=UploadedAt") ;;
+      r|random) QUERY_PARAMS+=("orderBy=Random") ;;
     esac
-
-    if [[ "$REQUEST_URL" == *"?"* ]]; then
-      REQUEST_URL="${REQUEST_URL}&${SORT_PARAM}"
-    else
-      REQUEST_URL="${REQUEST_URL}?${SORT_PARAM}"
-    fi
   fi
 
   if [[ "$ORIENTATION" == "1" ]]; then
     case "$ORIENTATION_OPT" in
-      l|landscape)
-        ORIENTATION_PARAM="orientation=Landscape"
-        ;;
-      p|portrait)
-        ORIENTATION_PARAM="orientation=Portrait"
-        ;;
-      s|square)
-        ORIENTATION_PARAM="orientation=Square"
-        ;;
-      a|all)
-        ORIENTATION_PARAM="orientation=All"
-        ;;
+      l|landscape) QUERY_PARAMS+=("orientation=Landscape") ;;
+      p|portrait) QUERY_PARAMS+=("orientation=Portrait") ;;
+      s|square) QUERY_PARAMS+=("orientation=Square") ;;
+      a|all) QUERY_PARAMS+=("orientation=All") ;;
     esac
-
-    if [[ "$REQUEST_URL" == *"?"* ]]; then
-      REQUEST_URL="${REQUEST_URL}&${ORIENTATION_PARAM}"
-    else
-      REQUEST_URL="${REQUEST_URL}?${ORIENTATION_PARAM}"
-    fi
   fi
 
-  if [[ "$EXCLUDE" == "1" ]]; then
-    if [[ "$REQUEST_URL" == *"?"* ]]; then
-      REQUEST_URL="${REQUEST_URL}&excludedTags=${EXCLUDE_OPT}"
-    else
-      REQUEST_URL="${REQUEST_URL}?excludedTags=${EXCLUDE_OPT}"
-    fi
+  for EXCLUDE_ITEM in "${EXCLUDE_OPTS[@]}"; do
+    QUERY_PARAMS+=("excludedTags=${EXCLUDE_ITEM}")
+  done
+
+  if [[ ${#QUERY_PARAMS[@]} -gt 0 ]]; then
+    QUERY_STRING=$(IFS='&'; echo "${QUERY_PARAMS[*]}")
+    REQUEST_URL="${WAIFU_URL}?${QUERY_STRING}"
+  else
+    REQUEST_URL="$WAIFU_URL"
   fi
 
   WAIFU_JSON=$(curl -s "$REQUEST_URL")
