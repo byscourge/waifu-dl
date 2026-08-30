@@ -40,32 +40,40 @@ Docs:
   $SCRIPT --nsfw help: Show nsfw help screen
   $SCRIPT --view help: Show image viewer help screen
   $SCRIPT --id help: Show id lookup help screen
+  $SCRIPT --tag help: Show tag lookup help screen
 
 Usage examples:
   $SCRIPT -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
   $SCRIPT -nb -t [ Set mode to all (NSFW+SFW) and open it with termux-open, for termux users. ]
   $SCRIPT -ne -vc [ Set mode to only NSFW and view the image with chafa ]
   $SCRIPT -p [ Print image URL ]
+  $SCRIPT -vc -ne -ghentai [ Set mode to only NSFW, search the tag hentai and view the image with chafa ]
+  $SCRIPT -vc -nn -gwaifu [ Set mode to no NSFW, search the tag waifu and view the image with chafa ]
+# -g is equivalent to --tag
 
 
 Valid flags:
 
 Short:
   $SCRIPT -h
+  $SCRIPT -p
+  $SCRIPT -t
+
   $SCRIPT -o (arg required)
   $SCRIPT -n (arg required)
-  $SCRIPT -t
   $SCRIPT -v (arg required)
-  $SCRIPT -p
   $SCRIPT -i (arg required)
+  $SCRIPT -g (arg required)
 Long:
   $SCRIPT --help
+  $SCRIPT --termux
+  $SCRIPT --print
+
   $SCRIPT --output (arg required)
   $SCRIPT --nsfw (arg required)
-  $SCRIPT --termux
   $SCRIPT --view (arg required)
-  $SCRIPT --print
   $SCRIPT --id (arg required)
+  $SCRIPT --tag (arg required)
   
 "
 }
@@ -86,6 +94,14 @@ view_valid() {
   return 1
 }
 
+tag_valid() {
+  local TAG_V
+  for TAG_V in "${TAG_VALID[@]}"; do
+    [[ "$TAG_V" == "$1" ]] && return 0
+  done
+  return 1
+}
+
 # ------------------------------------------------------------------
 # # # # # # #
 # VARIABLES
@@ -93,7 +109,7 @@ view_valid() {
 # ------------------------------------------------------------------
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:pi:" -l "help,output:,nsfw:,termux,view:,print,id:" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:g:" -l "help,output:,nsfw:,termux,view:,print,id:tag:" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -145,6 +161,32 @@ VIEW_VALID=(
   s
   chafa
   sixel
+)
+
+TAG=0
+TAG_OPT=""
+
+TAG_VALID=(
+  milf
+  uniform
+  ass
+  maid
+  selfies
+  paizuri
+  oral
+  genshin-impact
+  raiden-shogun
+  marin-kitagawa
+  mori-calliope
+  kamisato-ayaka
+  rem
+  nami
+  one-piece
+  waifu
+  ero
+  ecchi
+  oppai
+  hentai
 )
 
 TERMUX=0
@@ -261,6 +303,39 @@ To view:
           esac
         ;;
 
+      -g|--tag)
+        TAG=1
+        case "$2" in
+          h|-h|help|--help)
+            printf '%s\n' "
+$SCRIPT: --tag
+
+Set TAG filter
+
+Valid tags:
+
+      milf, uniform, ass, maid,
+      waifu, ero, ecchi, oppai, hentai,
+      selfies, paizuri, oral, rem,
+
+      raiden-shogun, marin-kitagawa,
+      mori-calliope, kamisato-ayaka,
+      genshin-impact, nami, one-piece
+      "
+                exit 0
+                ;;
+              *)
+                if tag_valid "$2"; then
+                  TAG_OPT="$2"
+                  shift 2
+                  continue
+                else
+                  print_err_msg "Failed to parse arguments! Unknown option: $2" 1
+                fi
+                ;;
+                esac
+              ;;
+
     --)
       shift
       break
@@ -322,20 +397,30 @@ if [[ "$USE_ID" == "1" ]]; then
   done
 else
   if [[ "$NSFW" != "1" ]]; then
-    WAIFU_JSON=$(curl -s "$WAIFU_URL")
+    REQUEST_URL="$WAIFU_URL"
   else
     case "$NSFW_OPT" in
       e|exclusive)
-        WAIFU_JSON=$(curl -s "$NSFW_EXCLUSIVE_WAIFU_URL")
+        REQUEST_URL="$NSFW_EXCLUSIVE_WAIFU_URL"
         ;;
       a|all|b|both)
-        WAIFU_JSON=$(curl -s "$NSFW_ALL_WAIFU_URL")
+        REQUEST_URL="$NSFW_ALL_WAIFU_URL"
         ;;
       n|none)
-        WAIFU_JSON=$(curl -s "$NSFW_NONE_WAIFU_URL")
+        REQUEST_URL="$NSFW_NONE_WAIFU_URL"
         ;;
     esac
   fi
+
+  if [[ "$TAG" == "1" ]]; then
+    if [[ "$REQUEST_URL" == *"?"* ]]; then
+      REQUEST_URL="${REQUEST_URL}&includedTags=${TAG_OPT}"
+    else
+      REQUEST_URL="${REQUEST_URL}?includedTags=${TAG_OPT}"
+    fi
+  fi
+
+  WAIFU_JSON=$(curl -s "$REQUEST_URL")
 
   # set image URL
   IMAGE_URL=$(printf '%s' "$WAIFU_JSON" | jq -r ".items[0].url")
