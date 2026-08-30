@@ -759,7 +759,7 @@ else
   IMAGE_URL=$(printf '%s' "$WAIFU_JSON" | jq -r ".items[0].url")
 fi
 
-[[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" ]] && \
+[[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" || ! "$IMAGE_URL" =~ ^https:\/\/cdn\.waifu\.im\/ ]] && \
   print_err_msg "Failed to fetch valid image data!" 1
 
 # check if no-print was passed
