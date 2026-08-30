@@ -49,6 +49,7 @@ Usage examples:
   $SCRIPT -p [ Print image URL ]
   $SCRIPT -vc -ne -ghentai [ Set mode to only NSFW, search the tag hentai and view the image with chafa ]
   $SCRIPT -vc -nn -gwaifu [ Set mode to no NSFW, search the tag waifu and view the image with chafa ]
+  
 # -g is equivalent to --tag
 
 
@@ -74,7 +75,6 @@ Long:
   $SCRIPT --view (arg required)
   $SCRIPT --id (arg required)
   $SCRIPT --tag (arg required)
-  
 "
 }
 
@@ -287,11 +287,19 @@ View an image from a specific ID
 
 Usage example (ID):
   $SCRIPT -i 7727
+  $SCRIPT -i 7727
+  $SCRIPT -i 6900
+  $SCRIPT -i 6992
+  $SCRIPT -i 6873
 
 To view:
   $SCRIPT -vc -i 7727
+  $SCRIPT -vc -i 7727
+  $SCRIPT -vc -i 6900
+  $SCRIPT -vc -i 6992
+  $SCRIPT -vc -i 6873
 
-# replace 7727 with any number. 7727 is a working example, though (real photo), so feel free to use it.
+# use any other number. those are working examples, though (REAL IMAGES), so feel free to use those.
 "
           exit 0
           ;;
