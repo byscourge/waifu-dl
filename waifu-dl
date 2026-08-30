@@ -742,22 +742,22 @@ fi
 
 # view with chafa
 if [[ "$VIEW" == "1" ]]; then
-    case "$VIEW_OPT" in
-      c|chafa)
-        command -v chafa &>/dev/null || {
-        print_err_msg "Missing command for flag -vc: chafa" 1
-        }
-        curl -s "$IMAGE_URL" | chafa
-        ;;
+  case "$VIEW_OPT" in
+    c|chafa)
+      command -v chafa &>/dev/null || {
+      print_err_msg "Missing command for flag -vc: chafa" 1
+      }
+      curl -s "$IMAGE_URL" | chafa
+      ;;
 
-      s|sixel)
-        command -v img2sixel &>/dev/null || {
-        print_err_msg "Missing library for flag -vs: libsixel" 1
-        }
+    s|sixel)
+      command -v img2sixel &>/dev/null || {
+      print_err_msg "Missing library for flag -vs: libsixel" 1
+      }
 
-        curl -s "$IMAGE_URL" | img2sixel
-        ;;
-    esac
+      curl -s "$IMAGE_URL" | img2sixel
+      ;;
+  esac
 fi
 
 # print statement
