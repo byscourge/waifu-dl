@@ -1,11 +1,9 @@
 
-## ***waifu is a CLI tool: view or download random waifu images from waifu.im.***
+## ***waifu-dl is a CLI tool: view or download random waifu images from waifu.im.***
 
 #### Use the script's CLI --help option/suboptions for more info.
 
 ## Docs:
-
-waifu is a simple CLI tool: view or download random waifu images from waifu.im.
 
 Docs:
   waifu --help: Show this help screen
@@ -50,7 +48,7 @@ Short:
 
 ## Installation
 ```bash
-wget https://raw.githubusercontent.com/byscourge/waifu-dl/master/waifu-dl -O waifu && chmod +x waifu
+wget https://raw.githubusercontent.com/byscourge/waifu-dl/master/waifu && chmod +x waifu
 ```
 
 ## Dependencies
