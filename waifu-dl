@@ -254,7 +254,7 @@ orientation_valid() {
 # ------------------------------------------------------------------
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -440,6 +440,13 @@ while true; do
 
     -p|--print)
       PRINT=1
+      shift
+      continue
+      ;;
+
+    --no-print)
+      DEL_PRINT=1
+      PRINT=0
       shift
       continue
       ;;
@@ -710,6 +717,11 @@ fi
 [[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" ]] && \
   print_err_msg "Failed to fetch valid image data!" 1
 
+# check if no-print was passed
+if [[ "$DEL_PRINT" == "1" ]]; then
+  PRINT=0
+fi
+
 # save to file
 if [[ "$OUTPUT" == "1" ]]; then
   if command -v wget &>/dev/null; then
@@ -755,7 +767,11 @@ fi
 
 # if no arguments, print url
 if [[ -z "$1" && -z "$PRINT" || "$PRINT" == "0" ]]; then
-  echo "$IMAGE_URL"
+  if [[ "$DEL_PRINT" == "1" ]]; then
+    :
+  else
+    echo "$IMAGE_URL"
+  fi
 fi
 
 exit 0
