@@ -291,6 +291,7 @@ Usage example (ID):
   $SCRIPT -i 6992
   $SCRIPT -i 6873
   $SCRIPT -i 7124
+  $SCRIPT -i 5469
 
 To view:
   $SCRIPT -vc -i 7727
@@ -298,6 +299,7 @@ To view:
   $SCRIPT -vc -i 6992
   $SCRIPT -vc -i 6873
   $SCRIPT -vc -i 7124
+  $SCRIPT -vc -i 5469
 
 # use any other number. those are working examples, though (REAL IMAGES), so feel free to use those.
 "
