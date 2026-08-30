@@ -42,6 +42,7 @@ Docs:
   $SCRIPT --id help: Show id lookup help screen
   $SCRIPT --tag help: Show tag lookup help screen
   $SCRIPT --type help: Show type sort help screen
+  $SCRIPT --sort help: Show sort type help screen
 
 Usage examples:
   $SCRIPT -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
@@ -67,6 +68,7 @@ Short:
   $SCRIPT -i (arg required)
   $SCRIPT -g (arg required)
   $SCRIPT -a (arg required)
+  $SCRIPT -s (arg required)
 Long:
   $SCRIPT --help
   $SCRIPT --termux
@@ -78,6 +80,7 @@ Long:
   $SCRIPT --id (arg required)
   $SCRIPT --tag (arg required)
   $SCRIPT --type (arg required)
+  $SCRIPT --sort (arg required)
 "
 }
 
@@ -115,6 +118,12 @@ type_valid() {
   return 1
 }
 
+sort_valid() {
+  name_valid SORT_VALID "$1" && \
+    return 0
+  return 1
+}
+
 # ------------------------------------------------------------------
 # # # # # # #
 # VARIABLES
@@ -122,7 +131,7 @@ type_valid() {
 # ------------------------------------------------------------------
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:pi:g:a:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -213,6 +222,22 @@ TYPE_VALID=(
   static
   both
   all
+)
+
+SORT=0
+SORT_OPT=""
+
+SORT_VALID=(
+  f
+  p
+  u
+  n
+  r
+  favorites
+  popular
+  uploaded
+  newest
+  random
 )
 
 TERMUX=0
@@ -391,6 +416,35 @@ Valid tags:
           esac
         ;;
 
+      -s|--sort)
+        SORT=1
+        case "$2" in
+          h|-h|help|--help)
+            printf '%s\n' "
+  $SCRIPT: --sort
+
+  Set SORT order
+
+  Valid options:
+
+    * f (favorites), p (popular) [ Sort by most popular ]
+    * u (uploaded), n (newest)   [ Sort by newest upload ]
+    * r (random)                 [ Sort randomly (default if --sort is omitted) ]
+  "
+            exit 0
+            ;;
+          *)
+            if sort_valid "$2"; then
+              SORT_OPT="$2"
+              shift 2
+              continue
+            else
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 1
+            fi
+            ;;
+          esac
+        ;;
+
     --)
       shift
       break
@@ -492,6 +546,26 @@ else
       REQUEST_URL="${REQUEST_URL}&${TYPE_PARAM}"
     else
       REQUEST_URL="${REQUEST_URL}?${TYPE_PARAM}"
+    fi
+  fi
+
+  if [[ "$SORT" == "1" ]]; then
+    case "$SORT_OPT" in
+      f|favorites|p|popular)
+        SORT_PARAM="orderBy=Favorites"
+        ;;
+      u|uploaded|n|newest)
+        SORT_PARAM="orderBy=UploadedAt"
+        ;;
+      r|random)
+        SORT_PARAM="orderBy=Random"
+        ;;
+    esac
+
+    if [[ "$REQUEST_URL" == *"?"* ]]; then
+      REQUEST_URL="${REQUEST_URL}&${SORT_PARAM}"
+    else
+      REQUEST_URL="${REQUEST_URL}?${SORT_PARAM}"
     fi
   fi
 
