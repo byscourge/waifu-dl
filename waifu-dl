@@ -61,36 +61,22 @@ All options in action:
 # -a is equivalent to --type
 # -r is equivalent to --orientation
 
-Valid flags:
+Valid flags (13):
 
-Short:
-  $SCRIPT -h
-  $SCRIPT -p
-  $SCRIPT -t
+  $SCRIPT -h/--help [ Show help screen ]
+  $SCRIPT -t/--termux [ Android: open media with termux-open ]
+  $SCRIPT -p/--print [ Print URL ]
+  $SCRIPT --no-print [ Force-disable URL printing ]
 
-  $SCRIPT -o (arg required)
-  $SCRIPT -n (arg required)
-  $SCRIPT -v (arg required)
-  $SCRIPT -i (arg required)
-  $SCRIPT -g (arg required)
-  $SCRIPT -a (arg required)
-  $SCRIPT -s (arg required)
-  $SCRIPT -r (arg required)
-Long:
-  $SCRIPT --help
-  $SCRIPT --termux
-  $SCRIPT --print
-
-  $SCRIPT --output (arg required)
-  $SCRIPT --nsfw (arg required)
-  $SCRIPT --view (arg required)
-  $SCRIPT --id (arg required)
-  $SCRIPT --tag (arg required)
-  $SCRIPT --type (arg required)
-  $SCRIPT --sort (arg required)
-  $SCRIPT --orientation (arg required)
-
-$SCRIPT --unihelp [ Print all help screens at once ]
+  $SCRIPT -o/--output (arg required) [ Save output as filename ]
+  $SCRIPT -n/--nsfw (arg required) [ Set NSFW Mode ]
+  $SCRIPT -v/--view (arg required) [ Set inline image viewer mode ]
+  $SCRIPT -i/--id (arg required) [ Lookat specific waifu ID ]
+  $SCRIPT -g/--tag (arg required) [ Set included tag ]
+  $SCRIPT -a/--type (arg required) [ Set media type ]
+  $SCRIPT -s/--sort (arg required) [ Set sort type ]
+  $SCRIPT -r/--orientation (arg required) [ Set orientation type ]
+  $SCRIPT --unihelp [ Print all help screens at once ]
 "
 }
 
