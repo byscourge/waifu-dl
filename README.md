@@ -10,9 +10,12 @@
 *  waifu --view help: Show image viewer help screen
 *  waifu --id help: Show id lookup help screen
 *  waifu --tag help: Show tag lookup help screen
+*  waifu --exclude help: Show tag exclusion help screen
 *  waifu --type help: Show type sort help screen
 *  waifu --sort help: Show sort type help screen
 *  waifu --orientation help: Show orientation sort help screen
+
+* waifu --unihelp: Show all help screens
 
 ## Usage examples:
 *  waifu -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
@@ -22,7 +25,7 @@
 *  waifu -vc -ne -ghentai [ Set mode to only NSFW, search the tag hentai and view the image with chafa ]
 *  waifu -vc -nn -gwaifu [ Set mode to no NSFW, search the tag waifu and view the image with chafa ]
 
-## Valid flags (13):
+## Valid flags (14):
 
 *  waifu -h/--help [ Show help screen ]
 *  waifu -t/--termux [ Android: open media with termux-open ]
@@ -35,12 +38,13 @@
 *  waifu -v/--view (arg required) [ Set inline image viewer mode ]
 *  waifu -i/--id (arg required) [ Lookat specific waifu ID ]
 *  waifu -g/--tag (arg required) [ Set included tag ]
+*  waifu -G/--exclude (arg required) [ Set excluded tag ]
 *  waifu -a/--type (arg required) [ Set media type ]
 *  waifu -s/--sort (arg required) [ Set sort type ]
 *  waifu -r/--orientation (arg required) [ Set orientation type ]
 
 ## All options in action:
-*  waifu --nsfw=exclusive --view=chafa --tag=hentai --type=static --sort=popular --orientation=portrait --no-print
+*  waifu --nsfw=exclusive --view=chafa --tag=hentai --exclude=ecchi --type=static --sort=popular --orientation=portrait --no-print
 
 Short:
 *  waifu -ne -vc -ghentai -as -sp -rp --no-print

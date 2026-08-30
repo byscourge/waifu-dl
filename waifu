@@ -42,6 +42,7 @@ Docs:
   $SCRIPT --view help: Show image viewer help screen
   $SCRIPT --id help: Show id lookup help screen
   $SCRIPT --tag help: Show tag lookup help screen
+  $SCRIPT --exclude help: Show tag exclusion help screen
   $SCRIPT --type help: Show type sort help screen
   $SCRIPT --sort help: Show sort type help screen
   $SCRIPT --orientation help: Show orientation sort help screen
@@ -55,13 +56,14 @@ Usage examples:
   $SCRIPT -vc -nn -gwaifu [ Set mode to no NSFW, search the tag waifu and view the image with chafa ]
 
 All options in action:
-  $SCRIPT --nsfw=exclusive --view=chafa --tag=hentai --type=static --sort=popular --orientation=portrait
+  $SCRIPT --nsfw=exclusive --view=chafa --tag=hentai --exclude=ecchi --type=static --sort=popular --orientation=portrait --no-print
   
 # -g is equivalent to --tag
+# -G is equivalent to --exclude
 # -a is equivalent to --type
 # -r is equivalent to --orientation
 
-Valid flags (13):
+Valid flags (14):
 
   $SCRIPT -h/--help [ Show help screen ]
   $SCRIPT -t/--termux [ Android: open media with termux-open ]
@@ -73,6 +75,7 @@ Valid flags (13):
   $SCRIPT -v/--view (arg required) [ Set inline image viewer mode ]
   $SCRIPT -i/--id (arg required) [ Lookat specific waifu ID ]
   $SCRIPT -g/--tag (arg required) [ Set included tag ]
+  $SCRIPT -G/--exclude (arg required) [ Set excluded tag ]
   $SCRIPT -a/--type (arg required) [ Set media type ]
   $SCRIPT -s/--sort (arg required) [ Set sort type ]
   $SCRIPT -r/--orientation (arg required) [ Set orientation type ]
@@ -92,10 +95,10 @@ Set ORIENTATION filter
 
 Valid options:
 
-    * l (landscape) [ Landscape images only ]
-    * p (portrait)  [ Portrait images only ]
-    * s (square)    [ Square images only ]
-    * a (all)       [ Any orientation ]
+  * l (landscape) [ Landscape images only ]
+  * p (portrait)  [ Portrait images only ]
+  * s (square)    [ Square images only ]
+  * a (all)       [ Any orientation ]
     "
 }
 
@@ -151,13 +154,32 @@ Set TAG filter
 
 Valid tags:
 
-    milf, uniform, ass, maid,
-    waifu, ero, ecchi, oppai, hentai,
-    selfies, paizuri, oral, rem,
+  milf, uniform, ass, maid,
+  waifu, ero, ecchi, oppai, hentai,
+  selfies, paizuri, oral, rem,
 
-    raiden-shogun, marin-kitagawa,
-    mori-calliope, kamisato-ayaka,
-    genshin-impact, nami, one-piece
+  raiden-shogun, marin-kitagawa,
+  mori-calliope, kamisato-ayaka,
+  genshin-impact, nami, one-piece
+"
+}
+
+
+print_exclude_help() {
+  printf '%s\n' "
+$SCRIPT: --exclude
+
+Set TAG to exclude
+
+Valid tags:
+
+  milf, uniform, ass, maid,
+  waifu, ero, ecchi, oppai, hentai,
+  selfies, paizuri, oral, rem,
+
+  raiden-shogun, marin-kitagawa,
+  mori-calliope, kamisato-ayaka,
+  genshin-impact, nami, one-piece
 "
 }
 
@@ -244,7 +266,7 @@ orientation_valid() {
 # ------------------------------------------------------------------
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print,exclude:" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -301,6 +323,9 @@ VIEW_VALID=(
 
 TAG=0
 TAG_OPT=""
+
+EXCLUDE=0
+EXCLUDE_OPT=""
 
 TAG_VALID=(
   milf
@@ -533,6 +558,25 @@ while true; do
           esac
         ;;
 
+      -G|--exclude)
+        EXCLUDE=1
+        case "$2" in
+          h|-h|help|--help)
+            print_exclude_help
+            exit 0
+            ;;
+          *)
+            if tag_valid "$2"; then
+              EXCLUDE_OPT="$2"
+              shift 2
+              continue
+            else
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 1
+            fi
+            ;;
+        esac
+        ;;
+
       --unihelp)
         print_help
         echo "--------------------------------"
@@ -543,6 +587,8 @@ while true; do
         print_id_help
         echo "--------------------------------"
         print_tag_help
+        echo "--------------------------------"
+        print_exclude_help
         echo "--------------------------------"
         print_type_help
         echo "--------------------------------"
@@ -696,6 +742,14 @@ else
       REQUEST_URL="${REQUEST_URL}&${ORIENTATION_PARAM}"
     else
       REQUEST_URL="${REQUEST_URL}?${ORIENTATION_PARAM}"
+    fi
+  fi
+
+  if [[ "$EXCLUDE" == "1" ]]; then
+    if [[ "$REQUEST_URL" == *"?"* ]]; then
+      REQUEST_URL="${REQUEST_URL}&excludedTags=${EXCLUDE_OPT}"
+    else
+      REQUEST_URL="${REQUEST_URL}?excludedTags=${EXCLUDE_OPT}"
     fi
   fi
 
