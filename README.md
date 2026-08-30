@@ -1,8 +1,10 @@
 
 waifu is a simple CLI tool: view or download random waifu images from waifu.im.
 
+#### Use the script's CLI --help option/suboptions for more info.
+
 Docs:
-  waifu --help: Show this help screen
+  waifu --help: Show the help screen
   waifu --nsfw help: Show nsfw help screen
   waifu --view help: Show image viewer help screen
   waifu --id help: Show id lookup help screen
