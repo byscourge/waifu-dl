@@ -10,6 +10,7 @@
 *  waifu --view help: Show image viewer help screen
 *  waifu --id help: Show id lookup help screen
 *  waifu --tag help: Show tag lookup help screen
+*  waifu --type help: Show tag lookup help screen
 
 ## Usage examples:
 
@@ -19,8 +20,10 @@
 *  waifu -p [ Print image URL ]
 *  waifu -vc -ne -ghentai [ Set mode to only NSFW, search the tag hentai and view the image with chafa ]
 *  waifu -vc -nn -gwaifu [ Set mode to no NSFW (only SFW), search the tag waifu and view the image with chafa ]
+* waifu -vc -nb -gwaifu -as [ Set mode to both NSFW and SFW, search the tag ecchi, set only as static images, and view the image with chafa ]
 
 - -g is equivalent to --tag!
+- -a is equivalent to --type!
 
 ## Installation
 ```bash
