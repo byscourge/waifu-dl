@@ -31,6 +31,7 @@ print_err_msg() {
 # # # # # # #
 # ------------------------------------------------------------------
 
+#### HELP FUNCTIONS ----------------------------<<<<<<<<<
 print_help() {
   printf '%s\n' "
 $SCRIPT is a simple CLI tool: view or download random waifu images from waifu.im.
@@ -43,6 +44,7 @@ Docs:
   $SCRIPT --tag help: Show tag lookup help screen
   $SCRIPT --type help: Show type sort help screen
   $SCRIPT --sort help: Show sort type help screen
+  $SCRIPT --orientation help: Show orientation sort help screen
 
 Usage examples:
   $SCRIPT -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
@@ -51,9 +53,13 @@ Usage examples:
   $SCRIPT -p [ Print image URL ]
   $SCRIPT -vc -ne -ghentai [ Set mode to only NSFW, search the tag hentai and view the image with chafa ]
   $SCRIPT -vc -nn -gwaifu [ Set mode to no NSFW, search the tag waifu and view the image with chafa ]
+
+All options in action:
+  $SCRIPT --nsfw=exclusive --view=chafa --tag=hentai --type=static --sort=popular --orientation=portrait
   
 # -g is equivalent to --tag
 # -a is equivalent to --type
+# -r is equivalent to --orientation
 
 Valid flags:
 
@@ -69,6 +75,7 @@ Short:
   $SCRIPT -g (arg required)
   $SCRIPT -a (arg required)
   $SCRIPT -s (arg required)
+  $SCRIPT -r (arg required)
 Long:
   $SCRIPT --help
   $SCRIPT --termux
@@ -81,8 +88,118 @@ Long:
   $SCRIPT --tag (arg required)
   $SCRIPT --type (arg required)
   $SCRIPT --sort (arg required)
+  $SCRIPT --orientation (arg required)
+
+$SCRIPT --unihelp [ Print all help screens at once ]
 "
 }
+
+print_orientation_help() {
+  printf '%s\n' "
+$SCRIPT: --orientation
+
+Set ORIENTATION filter
+
+Valid options:
+
+    * l (landscape) [ Landscape images only ]
+    * p (portrait)  [ Portrait images only ]
+    * s (square)    [ Square images only ]
+    * a (all)       [ Any orientation ]
+    "
+}
+
+print_nsfw_help() {
+  printf '%s\n' "
+$SCRIPT: --nsfw
+
+Set NSFW mode
+
+Valid options:
+
+  * e (exclusive) [ Set to only NSFW media ]
+  * b (both) [ Set to both NSFW and SFW media ]
+  * a (all)  [ Set to both NSFW and SFW media ]
+  * n (none) [ Set to no NSFW media ]
+  "
+}
+
+print_view_help() {
+  printf '%s\n' "
+$SCRIPT: --view
+
+Set VIEW mode
+
+Valid options:
+
+  * c (chafa) [ Set to view with Chafa ]
+  * s (sixel) [ Set to view with Img2sixel ]
+"
+}
+
+print_id_help() {
+  printf '%s\n' "
+$SCRIPT: --id
+
+View an image from a specific ID ( 4-digit number )
+
+Usage:
+  $SCRIPT -i xxxx (numbers)
+
+ID examples:
+  1739, 5469, 6873, 6900, 6992, 7124, 7799, 8357
+
+# use any other number. those are working examples, though (REAL IMAGES), so feel free to use those.
+"
+}
+
+print_tag_help() {
+  printf '%s\n' "
+$SCRIPT: --tag
+
+Set TAG filter
+
+Valid tags:
+
+    milf, uniform, ass, maid,
+    waifu, ero, ecchi, oppai, hentai,
+    selfies, paizuri, oral, rem,
+
+    raiden-shogun, marin-kitagawa,
+    mori-calliope, kamisato-ayaka,
+    genshin-impact, nami, one-piece
+"
+}
+
+print_type_help() {
+  printf '%s\n' "
+$SCRIPT: --type
+
+Set TYPE filter (animated vs static images)
+
+Valid options:
+
+  * a (animated) [ Only animated (gif) media ]
+  * s (static)   [ Only static (non-gif) media ]
+  * b (both), all [ Both animated and static media ]
+"
+}
+
+print_sort_help() {
+  printf '%s\n' "
+$SCRIPT: --sort
+
+Set SORT order
+
+Valid options:
+
+  * f (favorites), p (popular) [ Sort by most popular ]
+  * u (uploaded), n (newest)   [ Sort by newest upload ]
+  * r (random)                 [ Sort randomly (default if --sort is omitted) ]
+"
+}
+
+#### VALIDATION FUNCTIONS ----------------------------<<<<<<<<<
 
 name_valid() {
   local XD
@@ -124,6 +241,12 @@ sort_valid() {
   return 1
 }
 
+orientation_valid() {
+  name_valid ORIENTATION_VALID "$1" && \
+    return 0
+  return 1
+}
+
 # ------------------------------------------------------------------
 # # # # # # #
 # VARIABLES
@@ -131,7 +254,7 @@ sort_valid() {
 # ------------------------------------------------------------------
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -240,6 +363,20 @@ SORT_VALID=(
   random
 )
 
+ORIENTATION=0
+ORIENTATION_OPT=""
+
+ORIENTATION_VALID=(
+  l
+  p
+  s
+  a
+  landscape
+  portrait
+  square
+  all
+)
+
 TERMUX=0
 
 while true; do
@@ -261,18 +398,7 @@ while true; do
       NSFW=1
         case "$2" in
           h|-h|help|--help)
-            printf '%s\n' "
-  $SCRIPT: --nsfw
-
-  Set NSFW mode
-
-  Valid options:
-
-  * e (exclusive) [ Set to only NSFW media ]
-  * b (both) [ Set to both NSFW and SFW media ]
-  * a (all)  [ Set to both NSFW and SFW media ]
-  * n (none) [ Set to no NSFW media ]
-"
+            print_nsfw_help
             exit 0
             ;;
           *)
@@ -291,16 +417,7 @@ while true; do
       VIEW=1
         case "$2" in
           h|-h|help|--help)
-            printf '%s\n' "
-  $SCRIPT: --view
-
-  Set VIEW mode
-
-  Valid options:
-
-  * c (chafa) [ Set to view with Chafa ]
-  * s (sixel) [ Set to view with Img2sixel ]
-"
+            print_view_help
             exit 0
             ;;
           *)
@@ -331,19 +448,7 @@ while true; do
       USE_ID=1
       case "$2" in
         h|-h|help|--help)
-          printf '%s\n' "
-$SCRIPT: --id
-
-View an image from a specific ID ( 4-digit number )
-
-Usage:
-  $SCRIPT -i xxxx (numbers)
-
-ID examples:
-  1739, 5469, 6873, 6900, 6992, 7124, 7799, 8357
-
-# use any other number. those are working examples, though (REAL IMAGES), so feel free to use those.
-"
+          print_id_help
           exit 0
           ;;
         *)
@@ -358,21 +463,7 @@ ID examples:
         TAG=1
         case "$2" in
           h|-h|help|--help)
-            printf '%s\n' "
-$SCRIPT: --tag
-
-Set TAG filter
-
-Valid tags:
-
-      milf, uniform, ass, maid,
-      waifu, ero, ecchi, oppai, hentai,
-      selfies, paizuri, oral, rem,
-
-      raiden-shogun, marin-kitagawa,
-      mori-calliope, kamisato-ayaka,
-      genshin-impact, nami, one-piece
-      "
+            print_tag_help
             exit 0
             ;;
           *)
@@ -391,17 +482,7 @@ Valid tags:
         TYPE=1
         case "$2" in
           h|-h|help|--help)
-            printf '%s\n' "
-  $SCRIPT: --type
-
-  Set TYPE filter (animated vs static images)
-
-  Valid options:
-
-    * a (animated) [ Only animated (gif) media ]
-    * s (static)   [ Only static (non-gif) media ]
-    * b (both), all [ Both animated and static media ]
-  "
+            print_type_help
             exit 0
             ;;
           *)
@@ -420,17 +501,7 @@ Valid tags:
         SORT=1
         case "$2" in
           h|-h|help|--help)
-            printf '%s\n' "
-  $SCRIPT: --sort
-
-  Set SORT order
-
-  Valid options:
-
-    * f (favorites), p (popular) [ Sort by most popular ]
-    * u (uploaded), n (newest)   [ Sort by newest upload ]
-    * r (random)                 [ Sort randomly (default if --sort is omitted) ]
-  "
+            print_sort_help
             exit 0
             ;;
           *)
@@ -443,6 +514,44 @@ Valid tags:
             fi
             ;;
           esac
+        ;;
+
+      -r|--orientation)
+        ORIENTATION=1
+        case "$2" in
+          h|-h|help|--help)
+            print_orientation_help
+            exit 0
+            ;;
+          *)
+            if orientation_valid "$2"; then
+              ORIENTATION_OPT="$2"
+              shift 2
+              continue
+            else
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 1
+            fi
+            ;;
+          esac
+        ;;
+
+      --unihelp)
+        print_help
+        echo "--------------------------------"
+        print_nsfw_help
+        echo "--------------------------------"
+        print_view_help
+        echo "--------------------------------"
+        print_id_help
+        echo "--------------------------------"
+        print_tag_help
+        echo "--------------------------------"
+        print_type_help
+        echo "--------------------------------"
+        print_sort_help
+        echo "--------------------------------"
+        print_orientation_help
+        exit 0
         ;;
 
     --)
@@ -566,6 +675,29 @@ else
       REQUEST_URL="${REQUEST_URL}&${SORT_PARAM}"
     else
       REQUEST_URL="${REQUEST_URL}?${SORT_PARAM}"
+    fi
+  fi
+
+  if [[ "$ORIENTATION" == "1" ]]; then
+    case "$ORIENTATION_OPT" in
+      l|landscape)
+        ORIENTATION_PARAM="orientation=Landscape"
+        ;;
+      p|portrait)
+        ORIENTATION_PARAM="orientation=Portrait"
+        ;;
+      s|square)
+        ORIENTATION_PARAM="orientation=Square"
+        ;;
+      a|all)
+        ORIENTATION_PARAM="orientation=All"
+        ;;
+    esac
+
+    if [[ "$REQUEST_URL" == *"?"* ]]; then
+      REQUEST_URL="${REQUEST_URL}&${ORIENTATION_PARAM}"
+    else
+      REQUEST_URL="${REQUEST_URL}?${ORIENTATION_PARAM}"
     fi
   fi
 
