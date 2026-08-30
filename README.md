@@ -45,6 +45,9 @@
 Short:
 *  waifu -ne -vc -ghentai -as -sp -rp --no-print
 
+## waifu-dl Has a killswitch mechanism:
+* It uses the same approach as hushlogin, if ~/.waifulock exists, it prints a friendly message and exits.
+* Said message: "This command does nothing. Have a wonderful day!"
 
 ## Installation
 ```bash

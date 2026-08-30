@@ -77,6 +77,10 @@ Valid flags (13):
   $SCRIPT -s/--sort (arg required) [ Set sort type ]
   $SCRIPT -r/--orientation (arg required) [ Set orientation type ]
   $SCRIPT --unihelp [ Print all help screens at once ]
+
+$SCRIPT has a killswitch mechanism:
+if ~/.waifulock exists, then it prints a friendly message and exits.
+Message: \"This command does nothing. Have a wonderful day!\"
 "
 }
 
