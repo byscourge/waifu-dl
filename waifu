@@ -64,9 +64,10 @@ All options in action:
 # -a is equivalent to --type
 # -r is equivalent to --orientation
 
-Valid flags (14):
+Valid flags (15):
 
   $SCRIPT -h/--help [ Show help screen ]
+  $SCRIPT --unihelp [ Print all help screens at once ]
   $SCRIPT -t/--termux [ Android: open media with termux-open ]
   $SCRIPT -p/--print [ Print URL ]
   $SCRIPT --no-print [ Force-disable URL printing ]
@@ -80,7 +81,7 @@ Valid flags (14):
   $SCRIPT -a/--type (arg required) [ Set media type ]
   $SCRIPT -s/--sort (arg required) [ Set sort type ]
   $SCRIPT -r/--orientation (arg required) [ Set orientation type ]
-  $SCRIPT --unihelp [ Print all help screens at once ]
+  $SCRIPT --print-var (arg required) [ Print internal waifu variable ]
 
 $SCRIPT has a killswitch mechanism:
 if ~/.waifulock exists, then it prints a friendly message and exits.
@@ -286,7 +287,7 @@ if ! ((x >=4)); then
 fi
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print,exclude:" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print,exclude:,print-var:" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -426,6 +427,21 @@ TERMUX=0
 
 while true; do
   case "$1" in
+
+    --print-var)
+      typeset -n NAME_VAR="$2"
+      DEL_PRINT=1
+      if declare -p "$2" 2>/dev/null | grep -q '^declare -a'; then
+        for VAR in "${NAME_VAR[@]}"; do
+          printf '%s\n' "$VAR"
+        done
+      else
+        echo "$NAME_VAR"
+      fi
+      shift 2
+      continue
+      ;;
+
 
     -h|--help)
       print_help

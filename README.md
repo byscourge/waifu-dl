@@ -26,13 +26,13 @@
 *  waifu -vc -ne -ghentai [ Set mode to only NSFW, search the tag hentai and view the image with chafa ]
 *  waifu -vc -nn -gwaifu [ Set mode to no NSFW, search the tag waifu and view the image with chafa ]
 
-## Valid flags (14):
+## Valid flags (15):
 
 *  waifu -h/--help [ Show help screen ]
+*  waifu --unihelp [ Print all help screens at once ]
 *  waifu -t/--termux [ Android: open media with termux-open ]
 *  waifu -p/--print [ Print URL ]
 *  waifu --no-print [ Force-disable URL printing ]
-*  waifu --unihelp [ Print all help screens at once ]
 
 *  waifu -o/--output (arg required) [ Save output as filename ]
 *  waifu -n/--nsfw (arg required) [ Set NSFW Mode ]
@@ -43,6 +43,7 @@
 *  waifu -a/--type (arg required) [ Set media type ]
 *  waifu -s/--sort (arg required) [ Set sort type ]
 *  waifu -r/--orientation (arg required) [ Set orientation type ]
+*  waifu --print-var (arg required) [ Print internal waifu variable ]
 
 ## All options in action:
 *  waifu --nsfw=exclusive --view=chafa --tag=hentai --exclude=ecchi --type=static --sort=popular --orientation=portrait --no-print
