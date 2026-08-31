@@ -8,6 +8,7 @@
 *  waifu --help: Show this help screen
 *  waifu --nsfw help: Show nsfw help screen
 *  waifu --view help: Show image viewer help screen
+*  waifu --output help: Show saveas help screen
 *  waifu --id help: Show id lookup help screen
 *  waifu --tag help: Show tag lookup help screen
 *  waifu --exclude help: Show tag exclusion help screen

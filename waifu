@@ -40,6 +40,7 @@ Docs:
   $SCRIPT --help: Show this help screen
   $SCRIPT --nsfw help: Show nsfw help screen
   $SCRIPT --view help: Show image viewer help screen
+  $SCRIPT --output help: Show saveas help screen
   $SCRIPT --id help: Show id lookup help screen
   $SCRIPT --tag help: Show tag lookup help screen
   $SCRIPT --exclude help: Show tag exclusion help screen
@@ -216,6 +217,19 @@ Valid options:
   * f (favorites), p (popular) [ Sort by most popular ]
   * u (uploaded), n (newest)   [ Sort by newest upload ]
   * r (random)                 [ Sort randomly (default if --sort is omitted) ]
+"
+}
+
+print_output_help() {
+  printd '%s\n' "
+$SCRIPT: --output
+
+Save media as FILENAME.ext
+
+Usage:
+
+$SCRIPT -o file [ Appends extension automatically ]
+
 "
 }
 
@@ -415,6 +429,12 @@ while true; do
 
     -o|--output)
       OUTPUT=1
+      case "$2" in
+        -h|--help)
+          print_output_help
+          exit 0
+          ;;
+      esac
       OUTPUT_NAME="$2"
       shift 2
       continue
@@ -594,6 +614,8 @@ while true; do
         echo "--------------------------------"
         print_view_help
         echo "--------------------------------"
+        print_output_help
+        echo "--------------------------------"
         print_id_help
         echo "--------------------------------"
         print_tag_help
@@ -735,7 +757,8 @@ fi
 # save to file
 if [[ "$OUTPUT" == "1" ]]; then
   if command -v wget &>/dev/null; then
-    wget "$IMAGE_URL" -O "$OUTPUT_NAME"
+    E_EXT="${IMAGE_URL:26}"
+    wget "$IMAGE_URL" -O "${OUTPUT_NAME}.${E_EXT}"
   else
     print_err_msg "Missing command for flag -o: wget" 1
   fi
