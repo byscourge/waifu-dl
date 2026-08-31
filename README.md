@@ -60,3 +60,4 @@ wget https://raw.githubusercontent.com/byscourge/waifu-dl/master/waifu && chmod 
 
 ## Dependencies
 * The core is curl & jq, optionally chafa/sixel.
+* GNU Getopt (>v4.0) is required.
