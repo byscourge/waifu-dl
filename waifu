@@ -265,6 +265,12 @@ orientation_valid() {
 # # # # # # #
 # ------------------------------------------------------------------
 
+# test if gnu getopt
+x="$(getopt -T;echo $?)"
+if ! ((x >=4)); then
+  print_err_msg "Getopt is not GNU!" 1
+fi
+
 # get flags
 PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print,exclude:" -n "$SCRIPT" -- "$@")
 
