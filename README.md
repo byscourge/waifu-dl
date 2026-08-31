@@ -54,6 +54,14 @@ Short:
 * It uses the same approach as hushlogin, if ~/.waifulock exists, it prints a friendly message and exits.
 * Said message: "This command does nothing. Have a wonderful day!"
 
+## Automation examples:
+* Download 20 images
+```bash
+for i in {1..20}; do
+    waifu -ne -sr -as -o "waifu_$i" # Automatically appends extension
+done
+```
+
 ## Installation
 ```bash
 wget https://raw.githubusercontent.com/byscourge/waifu-dl/master/waifu && chmod +x waifu
