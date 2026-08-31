@@ -214,7 +214,7 @@ Valid options:
 }
 
 print_output_help() {
-  printd '%s\n' "
+  printf '%s\n' "
 $SCRIPT: --output
 
 Save media as FILENAME.ext
@@ -309,6 +309,7 @@ ID_EX=(
   1739
   3119
   5469
+  5943
   6162
   6873
   6900
@@ -321,6 +322,12 @@ ID_EX=(
 
 OUTPUT=0
 OUTPUT_NAME=""
+
+RAW_URL=0
+SHOW_JSON=0
+
+PRINT_INT_VAR=0
+INT_VAR=""
 
 USE_ID=0
 ID_OPT=""
@@ -442,15 +449,11 @@ while true; do
       ;;
 
     --print-var)
+      PRINT_INT_VAR=1
+
+      INT_VAR="$2"
       typeset -n NAME_VAR="$2"
-      DEL_PRINT=1
-      if declare -p "$2" 2>/dev/null | grep -q '^declare -a'; then
-        for VAR in "${NAME_VAR[@]}"; do
-          printf '%s\n' "$VAR"
-        done
-      else
-        echo "$NAME_VAR"
-      fi
+      
       shift 2
       continue
       ;;
@@ -782,8 +785,6 @@ fi
 
 
 
-
-
 if [[ "$RAW_URL" != "1" && "$SHOW_JSON" != "1" ]]; then
 
   [[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" || ! "$IMAGE_URL" =~ ^https:\/\/cdn\.waifu\.im\/ ]] && \
@@ -854,6 +855,21 @@ else
   echo
   if [[ "$SHOW_JSON" == "1" ]]; then
     echo "$WAIFU_JSON"
+  fi
+fi
+
+
+if [[ "$PRINT_INT_VAR" == "1" ]]; then
+  if [[ -z "$NAME_VAR" ]]; then
+    print_err_msg "Variable not found!"
+  else
+    if declare -p "$INT_VAR" 2>/dev/null | grep -q '^declare -a'; then
+      for VAR in "${NAME_VAR[@]}"; do
+        printf '%s\n' "$VAR"
+      done
+    else
+      echo "$NAME_VAR"
+    fi
   fi
 fi
 
