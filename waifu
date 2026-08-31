@@ -12,7 +12,6 @@
 
 KILLSWITCH="$HOME/.waifulock"
 if [[ -f "$KILLSWITCH" ]]; then
-  echo "This command does nothing. Have a wonderful day!"
   exit 0
 fi
 
@@ -86,8 +85,7 @@ Valid flags (17):
   $SCRIPT --print-var (arg required) [ Print internal waifu variable ]
 
 $SCRIPT has a killswitch mechanism:
-if ~/.waifulock exists, then it prints a friendly message and exits.
-Message: \"This command does nothing. Have a wonderful day!\"
+if ~/.waifulock exists, it exits with no action.
 "
 }
 
