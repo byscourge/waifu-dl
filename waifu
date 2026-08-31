@@ -141,15 +141,7 @@ Usage:
   $SCRIPT -i xxxx (numbers)
 
 ID examples:
-  1739
-  5469
-  6162
-  6873
-  6900
-  6992
-  7124
-  7799
-  8357
+  ${ID_EX[*]}
 
 # you can also use any other number. these are working examples, though (REAL IMAGES), so feel free to use these aswell.
 "
@@ -311,6 +303,19 @@ WAIFU_URL="https://api.waifu.im/images"
 # ------------------------------------------------------------------
 
 eval set -- "$PARAM"
+
+ID_EX=(
+  1739
+  3119
+  5469
+  6162
+  6873
+  6900
+  6992
+  7124
+  7799
+  8357
+)
 
 OUTPUT=0
 OUTPUT_NAME=""
