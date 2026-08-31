@@ -64,13 +64,15 @@ All options in action:
 # -a is equivalent to --type
 # -r is equivalent to --orientation
 
-Valid flags (15):
+Valid flags (17):
 
   $SCRIPT -h/--help [ Show help screen ]
   $SCRIPT --unihelp [ Print all help screens at once ]
   $SCRIPT -t/--termux [ Android: open media with termux-open ]
   $SCRIPT -p/--print [ Print URL ]
   $SCRIPT --no-print [ Force-disable URL printing ]
+  $SCRIPT --raw [ Print pre-curl waifu.im URL ]
+  $SCRIPT --json [ Print pre-jq waifu.im JSON ]
 
   $SCRIPT -o/--output (arg required) [ Save output as filename ]
   $SCRIPT -n/--nsfw (arg required) [ Set NSFW Mode ]
@@ -287,7 +289,7 @@ if ! ((x >=4)); then
 fi
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print,exclude:,print-var:" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print,exclude:,print-var:,raw,json" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -428,6 +430,18 @@ TERMUX=0
 
 while true; do
   case "$1" in
+
+    --raw)
+      RAW_URL=1
+      shift
+      continue
+      ;;
+
+    --json)
+      SHOW_JSON=1
+      shift
+      continue
+      ;;
 
     --print-var)
       typeset -n NAME_VAR="$2"
@@ -768,64 +782,80 @@ else
   IMAGE_URL=$(printf '%s' "$WAIFU_JSON" | jq -r ".items[0].url")
 fi
 
-[[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" || ! "$IMAGE_URL" =~ ^https:\/\/cdn\.waifu\.im\/ ]] && \
-  print_err_msg "Failed to fetch valid image data!" 1
 
-# check if no-print was passed
-if [[ "$DEL_PRINT" == "1" ]]; then
-  PRINT=0
-fi
 
-# save to file
-if [[ "$OUTPUT" == "1" ]]; then
-  if command -v wget &>/dev/null; then
-    E_EXT="${IMAGE_URL:26}"
-    wget "$IMAGE_URL" -O "${OUTPUT_NAME}.${E_EXT}"
-  else
-    print_err_msg "Missing command for flag -o: wget" 1
-  fi
-fi
 
-# open on termux
-if [[ "$TERMUX" == "1" ]]; then
-  if command -v termux-open &>/dev/null; then
-    termux-open "$IMAGE_URL"
-  else
-    print_err_msg "termux-open not available!" 1
-  fi
-fi
 
-# view with chafa
-if [[ "$VIEW" == "1" ]]; then
-  case "$VIEW_OPT" in
-    c|chafa)
-      command -v chafa &>/dev/null || {
-      print_err_msg "Missing command for flag -vc: chafa" 1
-      }
-      curl -s "$IMAGE_URL" | chafa
-      ;;
+if [[ "$RAW_URL" != "1" && "$SHOW_JSON" != "1" ]]; then
 
-    s|sixel)
-      command -v img2sixel &>/dev/null || {
-      print_err_msg "Missing library for flag -vs: libsixel" 1
-      }
+  [[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" || ! "$IMAGE_URL" =~ ^https:\/\/cdn\.waifu\.im\/ ]] && \
+    print_err_msg "Failed to fetch valid image data!" 1
 
-      curl -s "$IMAGE_URL" | img2sixel
-      ;;
-  esac
-fi
-
-# print statement
-if [[ "$PRINT" == "1" ]]; then
-  echo "$IMAGE_URL"
-fi
-
-# if no arguments, print url
-if [[ -z "$1" && -z "$PRINT" || "$PRINT" == "0" ]]; then
+  # check if no-print was passed
   if [[ "$DEL_PRINT" == "1" ]]; then
-    :
-  else
+    PRINT=0
+  fi
+
+  # save to file
+  if [[ "$OUTPUT" == "1" ]]; then
+    if command -v wget &>/dev/null; then
+      E_EXT="${IMAGE_URL:26}"
+      wget "$IMAGE_URL" -O "${OUTPUT_NAME}.${E_EXT}"
+    else
+      print_err_msg "Missing command for flag -o: wget" 1
+    fi
+  fi
+
+  # open on termux
+  if [[ "$TERMUX" == "1" ]]; then
+    if command -v termux-open &>/dev/null; then
+      termux-open "$IMAGE_URL"
+    else
+      print_err_msg "termux-open not available!" 1
+    fi
+  fi
+
+  # view with chafa
+  if [[ "$VIEW" == "1" ]]; then
+    case "$VIEW_OPT" in
+      c|chafa)
+        command -v chafa &>/dev/null || {
+        print_err_msg "Missing command for flag -vc: chafa" 1
+        }
+        curl -s "$IMAGE_URL" | chafa
+        ;;
+
+      s|sixel)
+        command -v img2sixel &>/dev/null || {
+        print_err_msg "Missing library for flag -vs: libsixel" 1
+        }
+
+        curl -s "$IMAGE_URL" | img2sixel
+        ;;
+    esac
+  fi
+
+  # print statement
+  if [[ "$PRINT" == "1" ]]; then
     echo "$IMAGE_URL"
+  fi
+
+  # if no arguments, print url
+  if [[ -z "$1" && -z "$PRINT" || "$PRINT" == "0" ]]; then
+    if [[ "$DEL_PRINT" == "1" ]]; then
+      :
+    else
+      echo "$IMAGE_URL"
+    fi
+  fi
+
+else
+  if [[ "$RAW_URL" == "1" ]]; then
+    echo "$REQUEST_URL"
+  fi
+  echo
+  if [[ "$SHOW_JSON" == "1" ]]; then
+    echo "$WAIFU_JSON"
   fi
 fi
 
