@@ -11,7 +11,7 @@
 # hushlogin-type implementation to hide script usage
 
 KILLSWITCH="$HOME/.waifulock"
-if [[ -f "$KILLSWITCH" ]]; then
+if [[ -f "$KILLSWITCH" || -d "$KILLSWITCH" || -l "$KILLSWITCH" ]]; then
   exit 0
 fi
 
