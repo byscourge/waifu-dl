@@ -64,7 +64,7 @@ All options in action:
 # -a is equivalent to --type
 # -r is equivalent to --orientation
 
-Valid flags (17):
+Valid flags (18):
 
   $SCRIPT -h/--help [ Show help screen ]
   $SCRIPT --unihelp [ Print all help screens at once ]

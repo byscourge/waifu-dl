@@ -28,7 +28,7 @@
 *  waifu -vc -ne -ghentai [ Set mode to only NSFW, search the tag hentai and view the image with chafa ]
 *  waifu -vc -nn -gwaifu [ Set mode to no NSFW, search the tag waifu and view the image with chafa ]
 
-## Valid flags (17):
+## Valid flags (18):
 
 *  waifu -h/--help [ Show help screen ]
 *  waifu --unihelp [ Print all help screens at once ]
