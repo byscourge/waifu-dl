@@ -1,4 +1,5 @@
 * This project is licensed under the GNU General Public License v3.0 LICENSE.
+* Inspired by `NyarchLinux/WaifuDownloader`
 
 ## ***waifu-dl is a CLI tool: view or download random waifu images from 'waifu.im'.***
 
