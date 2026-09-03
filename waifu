@@ -39,7 +39,7 @@ Docs:
   $SCRIPT --help: Show this help screen
   $SCRIPT --nsfw help: Show nsfw help screen
   $SCRIPT --view help: Show image viewer help screen
-  $SCRIPT --output help: Show saveas help screen
+  $SCRIPT --output --help: Show output-save help screen
   $SCRIPT --id help: Show id lookup help screen
   $SCRIPT --tag help: Show tag lookup help screen
   $SCRIPT --exclude help: Show tag exclusion help screen
@@ -74,7 +74,7 @@ Valid flags (18):
   $SCRIPT --raw [ Print pre-curl waifu.im URL ]
   $SCRIPT --json [ Print pre-jq waifu.im JSON ]
 
-  $SCRIPT -o/--output (arg required) [ Save output as filename ]
+  $SCRIPT -o/--output (arg required) [ Save output as filename.ext ]
   $SCRIPT -n/--nsfw (arg required) [ Set NSFW Mode ]
   $SCRIPT -v/--view (arg required) [ Set inline image viewer mode ]
   $SCRIPT -i/--id (arg required) [ Lookat specific waifu ID ]

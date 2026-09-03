@@ -9,7 +9,7 @@
 *  waifu --help: Show this help screen
 *  waifu --nsfw help: Show nsfw help screen
 *  waifu --view help: Show image viewer help screen
-*  waifu --output help: Show saveas help screen
+*  waifu --output --help: Show output-save help screen
 *  waifu --id help: Show id lookup help screen
 *  waifu --tag help: Show tag lookup help screen
 *  waifu --exclude help: Show tag exclusion help screen
@@ -38,7 +38,7 @@
 *  waifu --raw [ Print pre-curl waifu.im URL ]
 *  waifu --json [ Print pre-jq waifu.im JSON ]
 
-*  waifu -o/--output (arg required) [ Save output as filename ]
+*  waifu -o/--output (arg required) [ Save output as filename.ext ]
 *  waifu -n/--nsfw (arg required) [ Set NSFW Mode ]
 *  waifu -v/--view (arg required) [ Set inline image viewer mode ]
 *  waifu -i/--id (arg required) [ Lookat specific waifu ID ]
