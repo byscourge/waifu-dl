@@ -867,6 +867,7 @@ if [[ "$TERMUX" == "1" ]]; then
 fi
 
 if [[ "$CHAFA" == "1" ]]; then
+  VIEW=0
   case "$CHAFA_OPT" in
     iterm)
       curl -s "$IMAGE_URL" | chafa --format iterm
