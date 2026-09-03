@@ -16,6 +16,7 @@
 *  waifu --type help: Show type sort help screen
 *  waifu --sort help: Show sort type help screen
 *  waifu --orientation help: Show orientation sort help screen
+*  waifu --chafa-format help: Show chafa type help screen
 
 * waifu --unihelp: Show all help screens
 
@@ -46,6 +47,7 @@
 *  waifu -a/--type (arg required) [ Set media type ]
 *  waifu -s/--sort (arg required) [ Set sort type ]
 *  waifu -r/--orientation (arg required) [ Set orientation type ]
+*  waifu --chafa-format (arg required) [ Set override chafa encode type ]
 *  waifu --print-var (arg required) [ Print internal waifu variable ]
 
 ## All options in action:

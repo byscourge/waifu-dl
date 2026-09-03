@@ -46,6 +46,7 @@ Docs:
   $SCRIPT --type help: Show type sort help screen
   $SCRIPT --sort help: Show sort type help screen
   $SCRIPT --orientation help: Show orientation sort help screen
+  $SCRIPT --chafa-format help: Show chafa type help screen
 
 Usage examples:
   $SCRIPT -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
@@ -82,6 +83,7 @@ Valid flags (17):
   $SCRIPT -a/--type (arg required) [ Set media type ]
   $SCRIPT -s/--sort (arg required) [ Set sort type ]
   $SCRIPT -r/--orientation (arg required) [ Set orientation type ]
+  $SCRIPT --chafa-format (arg required) [ Set override chafa encode type ]
   $SCRIPT --print-var (arg required) [ Print internal waifu variable ]
 
 $SCRIPT has a killswitch mechanism:
@@ -221,8 +223,24 @@ Save media as FILENAME.ext
 
 Usage:
 
-$SCRIPT -o file [ Appends extension automatically ]
+  $SCRIPT -o file [ Appends extension automatically ]
 
+"
+}
+
+print_chafa_format_help() {
+  printf '%s\n' "
+$SCRIPT: --chafa-format
+
+Use chafa specifically & specify the format
+
+Usage:
+
+  $SCRIPT --chafa-format [format]
+
+Valid formats:
+
+  ${CHAFA_VALID[*]}
 "
 }
 
@@ -274,6 +292,12 @@ orientation_valid() {
   return 1
 }
 
+chafa_valid() {
+  name_valid CHAFA_VALID "$1" && \
+    return 0
+  return 1
+}
+
 # ------------------------------------------------------------------
 # # # # # # #
 # VARIABLES
@@ -287,7 +311,7 @@ if ! ((x >=4)); then
 fi
 
 # get flags
-PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print,exclude:,print-var:,raw,json" -n "$SCRIPT" -- "$@")
+PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,print,id:,tag:,type:,sort:,orientation:,unihelp,no-print,exclude:,print-var:,raw,json,chafa-format:" -n "$SCRIPT" -- "$@")
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
@@ -431,6 +455,15 @@ ORIENTATION_VALID=(
   all
 )
 
+CHAFA=0
+CHAFA_OPT=""
+CHAFA_VALID=(
+  iterm
+  kitty
+  sixels
+  symbols
+)
+
 TERMUX=0
 
 while true; do
@@ -514,6 +547,25 @@ while true; do
             ;;
         esac
       ;;
+
+    --chafa-format)
+      CHAFA=1
+        case "$2" in
+          h|-h|help|--help)
+            print_chafa_format_help
+            exit 0
+            ;;
+          *)
+            if chafa_valid "$2"; then
+              CHAFA_OPT="$2"
+              shift 2
+              continue
+            else
+              print_err_msg "Failed to parse arfuments! Unknown option: $2"
+            fi
+            ;;
+        esac
+        ;;
 
     -t|--termux)
       TERMUX=1
@@ -664,6 +716,9 @@ while true; do
         print_sort_help
         echo "--------------------------------"
         print_orientation_help
+        echo "--------------------------------"
+        print_chafa_format_help
+        echo "--------------------------------"
         exit 0
         ;;
 
@@ -811,6 +866,22 @@ if [[ "$TERMUX" == "1" ]]; then
   fi
 fi
 
+if [[ "$CHAFA" == "1" ]]; then
+  case "$CHAFA_OPT" in
+    iterm)
+      curl -s "$IMAGE_URL" | chafa --format iterm
+      ;;
+    kitty)
+      curl -s "$IMAGE_URL" | chafa --format kitty
+      ;;
+    sixels)
+      curl -s "$IMAGE_URL" | chafa --format sixels
+      ;;
+    symbols)
+      curl -s "$IMAGE_URL" | chafa --format symbols
+      ;;
+    esac
+fi
 # view with chafa
 if [[ "$VIEW" == "1" ]]; then
   case "$VIEW_OPT" in
