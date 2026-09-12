@@ -327,6 +327,8 @@ WAIFU_URL="https://api.waifu.im/images"
 # # # # # # # #
 # ------------------------------------------------------------------
 
+sleep 0.2 # be nice to the API!
+
 eval set -- "$PARAM"
 
 ID_EX=(
