@@ -1,9 +1,10 @@
 * This project is licensed under the GNU General Public License v3.0 LICENSE.
 * Inspired by `NyarchLinux/WaifuDownloader`
 
-## ***waifu-dl is a CLI tool: view or download random waifu images from 'waifu.im'.***
+## ***waifu-dl is a lightweight CLI tool used to view or download random waifu images from 'waifu.im', directly usable in the terminal or by other applications.***
 
-#### Use the script's CLI --help option/suboptions for more info.
+#### Use the script's CLI --help option/suboptions for more info, or check the FULLDOC.md file.
+[FULLDOC.md: Documentation of all other flags that require an argument, and how to use them.](FULLDOC.md)
 
 ## Docs:
 *  waifu --help: Show this help screen
