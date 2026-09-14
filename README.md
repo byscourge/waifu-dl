@@ -4,69 +4,9 @@
 ## ***waifu-dl is a lightweight CLI tool used to view or download random waifu images from 'waifu.im', directly usable in the terminal or by other applications.***
 
 #### Use the script's CLI --help option/suboptions for more info, or check the FULLDOC.md file.
-[FULLDOC.md: Documentation of all other flags that require an argument, and how to use them.](FULLDOC.md)
+[FULLDOC.md: Full online documentation of waifu-dl.](FULLDOC.md)
 
-## Docs:
-*  waifu --help: Show this help screen
-*  waifu --nsfw help: Show nsfw help screen
-*  waifu --view help: Show image viewer help screen
-*  waifu --output --help: Show output-save help screen
-*  waifu --id help: Show id lookup help screen
-*  waifu --tag help: Show tag lookup help screen
-*  waifu --exclude help: Show tag exclusion help screen
-*  waifu --type help: Show type sort help screen
-*  waifu --sort help: Show sort type help screen
-*  waifu --orientation help: Show orientation sort help screen
-*  waifu --chafa-format help: Show chafa type help screen
 
-* waifu --unihelp: Show all help screens
-
-## Usage examples:
-*  waifu -ne -o animegirl.png [ Set mode to only NSFW and save the image to ./animegirl.png ]
-*  waifu -nb -t [ Set mode to all (NSFW+SFW) and open it with termux-open, for termux users. ]
-*  waifu -ne -vc [ Set mode to only NSFW and view the image with chafa ]
-*  waifu -p [ Print image URL ]
-*  waifu -vc -ne -ghentai [ Set mode to only NSFW, search the tag hentai and view the image with chafa ]
-*  waifu -vc -nn -gwaifu [ Set mode to no NSFW, search the tag waifu and view the image with chafa ]
-
-## Valid flags (18):
-
-*  waifu -h/--help [ Show help screen ]
-*  waifu --unihelp [ Print all help screens at once ]
-*  waifu -t/--termux [ Android: open media with termux-open ]
-*  waifu -p/--print [ Print URL ]
-*  waifu --no-print [ Force-disable stdout printing ]
-*  waifu --raw [ Print pre-curl waifu.im URL ]
-*  waifu --json [ Print pre-jq waifu.im JSON ]
-
-*  waifu -o/--output (arg required) [ Save output as filename.ext ]
-*  waifu -n/--nsfw (arg required) [ Set NSFW Mode ]
-*  waifu -v/--view (arg required) [ Set inline image viewer mode ]
-*  waifu -i/--id (arg required) [ Lookat specific waifu ID ]
-*  waifu -g/--tag (arg required) [ Set included tag ]
-*  waifu -G/--exclude (arg required) [ Set excluded tag ]
-*  waifu -a/--type (arg required) [ Set media type ]
-*  waifu -s/--sort (arg required) [ Set sort type ]
-*  waifu -r/--orientation (arg required) [ Set orientation type ]
-*  waifu --chafa-format (arg required) [ Set override chafa encode type ]
-*  waifu --print-var (arg required) [ Print internal waifu variable ]
-
-## All options in action:
-*  waifu --nsfw=exclusive --view=chafa --tag=hentai --exclude=ecchi --type=static --sort=popular --orientation=portrait --no-print
-
-Short:
-*  waifu -ne -vc -ghentai -as -sp -rp --no-print
-
-## waifu-dl Has a killswitch mechanism:
-* It uses the same approach as hushlogin, if ~/.waifulock exists, it exits with no action.
-
-## Automation examples:
-* Download 20 images
-```bash
-for i in {1..20}; do
-    waifu -ne -sr -as -o "waifu_$i" # Automatically appends extension
-done
-```
 
 ## Installation
 ```bash
