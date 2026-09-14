@@ -306,7 +306,7 @@ chafa_valid() {
 # test if gnu getopt
 x="$(getopt -T;echo $?)"
 if ! ((x >=4)); then
-  print_err_msg "Getopt is not GNU!" 3
+  print_err_msg "Getopt is not GNU!" 4
 fi
 
 # get flags
@@ -315,7 +315,7 @@ PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,pr
 # check if getopt failed for some reason
 PARAM_RC="$?"
 [[ "$PARAM_RC" != "0" ]] && \
-  print_err_msg "Failed to parse parameters!" 4
+  print_err_msg "Failed to parse parameters!" 5
 
 # API
 WAIFU_URL="https://api.waifu.im/images"
@@ -524,7 +524,7 @@ while true; do
               shift 2
               continue
             else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 4
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
             fi
             ;;
         esac
@@ -543,7 +543,7 @@ while true; do
               shift 2
               continue
             else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 4
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
             fi
             ;;
         esac
@@ -562,7 +562,7 @@ while true; do
               shift 2
               continue
             else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 4
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
             fi
             ;;
         esac
@@ -614,7 +614,7 @@ while true; do
               shift 2
               continue
             else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 4
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
             fi
             ;;
         esac
@@ -633,7 +633,7 @@ while true; do
               shift 2
               continue
             else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 4
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
             fi
             ;;
           esac
@@ -652,7 +652,7 @@ while true; do
               shift 2
               continue
             else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 4
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
             fi
             ;;
           esac
@@ -671,7 +671,7 @@ while true; do
               shift 2
               continue
             else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 4
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
             fi
             ;;
           esac
@@ -690,7 +690,7 @@ while true; do
               shift 2
               continue
             else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 4
+              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
             fi
             ;;
         esac
@@ -727,7 +727,7 @@ while true; do
       break
       ;;
     *)
-      print_err_msg "Failed to parse arguments! Unknown option: $1" 4
+      print_err_msg "Failed to parse arguments! Unknown option: $1" 5
       ;;
   esac
 done
@@ -850,7 +850,7 @@ fi
 
 
 [[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" || ! "$IMAGE_URL" =~ ^https:\/\/cdn\.waifu\.im\/ ]] && \
-  print_err_msg "Failed to fetch valid image data!" 5
+  print_err_msg "Failed to fetch valid image data!" 6
 
 # save to file
 if [[ "$OUTPUT" == "1" ]]; then
@@ -926,7 +926,7 @@ fi
 
 if [[ "$PRINT_INT_VAR" == "1" ]]; then
   if [[ -z "$NAME_VAR" ]]; then
-    print_err_msg "Variable not found!" 6
+    print_err_msg "Variable not found!" 7
   else
     if declare -p "$INT_VAR" 2>/dev/null | grep -q '^declare -a'; then
       for VAR in "${NAME_VAR[@]}"; do
