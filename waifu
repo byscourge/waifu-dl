@@ -769,7 +769,7 @@ fi
         echo "$SCRIPT: Missing commands!" >&2
       fi
       for MISSING in "${MISSING_CMD[@]}"; do
-        printf "$MISSING\n"
+        echo "$MISSING" >&2
       done
       exit 2 # missing commands
     fi
