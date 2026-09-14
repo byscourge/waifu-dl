@@ -35,7 +35,7 @@
 *  waifu --unihelp [ Print all help screens at once ]
 *  waifu -t/--termux [ Android: open media with termux-open ]
 *  waifu -p/--print [ Print URL ]
-*  waifu --no-print [ Force-disable URL printing ]
+*  waifu --no-print [ Force-disable stdout printing ]
 *  waifu --raw [ Print pre-curl waifu.im URL ]
 *  waifu --json [ Print pre-jq waifu.im JSON ]
 

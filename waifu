@@ -70,7 +70,7 @@ Valid flags (18):
   $SCRIPT --unihelp [ Print all help screens at once ]
   $SCRIPT -t/--termux [ Android: open media with termux-open ]
   $SCRIPT -p/--print [ Print URL ]
-  $SCRIPT --no-print [ Force-disable URL printing ]
+  $SCRIPT --no-print [ Force-disable stdout printing ]
   $SCRIPT --raw [ Print pre-curl waifu.im URL ]
   $SCRIPT --json [ Print pre-jq waifu.im JSON ]
 
@@ -583,7 +583,6 @@ while true; do
 
     --no-print)
       DEL_PRINT=1
-      PRINT=0
       shift
       continue
       ;;
@@ -847,13 +846,20 @@ fi
 # check if no-print was passed
 if [[ "$DEL_PRINT" == "1" ]]; then
   PRINT=0
+  RAW_URL=0
+  SHOW_JSON=0
+  PRINT_INT_VAR=0
 fi
 
 # save to file
 if [[ "$OUTPUT" == "1" ]]; then
   if command -v wget &>/dev/null; then
     E_EXT="${IMAGE_URL:26}"
-    wget "$IMAGE_URL" -O "${OUTPUT_NAME}.${E_EXT}"
+    if [[ "$DEL_PRINT" == "1" ]]; then
+      wget "$IMAGE_URL" -O "${OUTPUT_NAME}.${E_EXT}" &>/dev/null
+    else
+      wget "$IMAGE_URL" -O "${OUTPUT_NAME}.${E_EXT}"
+    fi
   else
     print_err_msg "Missing command for flag -o: wget" 1
   fi
