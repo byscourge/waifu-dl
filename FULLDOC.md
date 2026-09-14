@@ -174,11 +174,12 @@ Valid formats:
 ## Exit codes for scripting:
 * Exit-code 1: Generic error
 
-* Exit-code 2: Missing command
-* Exit-code 3: Getopt is not GNU
-* Exit-code 4: Failed argument/paremeter parsing
-* Exit-code 5: Failed to fetch valid media data
-* Exit-code 6: Invalid variable name (part of --print-var)
+* Exit-code 2: Missing core command
+* Exit-code 3: Missing other/optional command
+* Exit-code 4: Getopt is not GNU
+* Exit-code 5: Failed argument/paremeter parsing
+* Exit-code 6: Failed to fetch valid media data
+* Exit-code 7: Invalid variable name (part of --print-var)
 
 ## waifu-dl Has a killswitch mechanism:
 * It uses the same approach as hushlogin, if ~/.waifulock exists, it exits with no action.

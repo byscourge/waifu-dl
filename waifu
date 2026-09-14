@@ -862,7 +862,7 @@ if [[ "$OUTPUT" == "1" ]]; then
       wget "$IMAGE_URL" -O "${OUTPUT_NAME}.${E_EXT}"
     fi
   else
-    print_err_msg "Missing command for flag -o: wget" 2
+    print_err_msg "Missing command for flag -o: wget" 3
   fi
 fi
 
@@ -871,7 +871,7 @@ if [[ "$TERMUX" == "1" ]]; then
   if command -v termux-open &>/dev/null; then
     termux-open "$IMAGE_URL"
   else
-    print_err_msg "termux-open not available!" 2
+    print_err_msg "termux-open not available!" 3
   fi
 fi
 
@@ -897,14 +897,14 @@ if [[ "$VIEW" == "1" ]]; then
   case "$VIEW_OPT" in
     c|chafa)
       command -v chafa &>/dev/null || {
-      print_err_msg "Missing command for flag -vc: chafa" 2
+      print_err_msg "Missing command for flag -vc: chafa" 3
       }
       curl -s "$IMAGE_URL" | chafa
       ;;
 
     s|sixel)
       command -v img2sixel &>/dev/null || {
-      print_err_msg "Missing command for flag -vs: img2sixel" 2
+      print_err_msg "Missing command for flag -vs: img2sixel" 3
       }
 
       curl -s "$IMAGE_URL" | img2sixel
