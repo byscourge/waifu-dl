@@ -45,7 +45,7 @@ Usage:
 ID examples:
   1739 3119 5469 5943 6162 6873 6900 6992 7124 7727 7799 8357
 
-# you can also use any other number. these are working examples, though (REAL IMAGES), so feel free to use these aswell.
+you can also use any other number. these are working examples, though (real waifu id's), so feel free to use these aswell.
 
 --------------------------------
 
