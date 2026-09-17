@@ -146,7 +146,7 @@ print_id_help() {
   printf '%s\n' "
 $SCRIPT: --id
 
-View an image from a specific ID ( 4-digit number )
+View an image from a specific ID ( any number up to 4 digits )
 
 Usage:
   $SCRIPT -i xxxx (numbers)
@@ -864,7 +864,7 @@ fi
 # save to file
 if [[ "$OUTPUT" == "1" ]]; then
   if command -v wget &>/dev/null; then
-    E_EXT="${IMAGE_URL:26}"
+    E_EXT="${IMAGE_URL##*.}"
     if [[ "$DEL_PRINT" == "1" ]]; then
       wget "$IMAGE_URL" -O "${OUTPUT_NAME}.${E_EXT}" &>/dev/null
     else

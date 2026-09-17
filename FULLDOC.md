@@ -75,7 +75,7 @@ Usage:
 
 waifu: --id
 
-View an image from a specific ID ( 4-digit number )
+View an image from a specific ID ( any number up to 4 digits )
 
 Usage:
   waifu -i xxxx (numbers)
