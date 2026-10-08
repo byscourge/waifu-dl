@@ -7,13 +7,11 @@
 # # # # # # #
 # ------------------------------------------------------------------
 
-
 # hushlogin-type implementation to hide script usage
 KILLSWITCH="$HOME/.waifulock"
 if [[ -f "$KILLSWITCH" ]]; then
   exit 0
 fi
-
 
 SCRIPT="$(basename "$0")" # grab script name
 
@@ -21,7 +19,6 @@ print_err_msg() {
   echo "$SCRIPT: $1" >&2
   exit "${2:-1}"
 }
-
 
 # ------------------------------------------------------------------
 # # # # # # #
@@ -139,6 +136,7 @@ Valid options:
 
   * c (chafa) [ Set to view with Chafa ]
   * s (sixel) [ Set to view with Img2sixel ]
+  * k (kitty) [ Set to view with Kitty ]
 "
 }
 
@@ -175,7 +173,6 @@ Valid tags:
   genshin-impact, nami, one-piece
 "
 }
-
 
 print_exclude_help() {
   printf '%s\n' "
@@ -265,43 +262,43 @@ name_valid() {
 }
 
 nsfw_valid() {
-  name_valid NSFW_VALID "$1" && \
+  name_valid NSFW_VALID "$1" &&
     return 0
   return 1
 }
 
 view_valid() {
-  name_valid VIEW_VALID "$1" && \
+  name_valid VIEW_VALID "$1" &&
     return 0
   return 1
 }
 
 tag_valid() {
-  name_valid TAG_VALID "$1" && \
+  name_valid TAG_VALID "$1" &&
     return 0
   return 1
 }
 
 type_valid() {
-  name_valid TYPE_VALID "$1" && \
+  name_valid TYPE_VALID "$1" &&
     return 0
   return 1
 }
 
 sort_valid() {
-  name_valid SORT_VALID "$1" && \
+  name_valid SORT_VALID "$1" &&
     return 0
   return 1
 }
 
 orientation_valid() {
-  name_valid ORIENTATION_VALID "$1" && \
+  name_valid ORIENTATION_VALID "$1" &&
     return 0
   return 1
 }
 
 chafa_valid() {
-  name_valid CHAFA_VALID "$1" && \
+  name_valid CHAFA_VALID "$1" &&
     return 0
   return 1
 }
@@ -313,8 +310,11 @@ chafa_valid() {
 # ------------------------------------------------------------------
 
 # test if gnu getopt
-x="$(getopt -T;echo $?)"
-if ! ((x >=4)); then
+x="$(
+  getopt -T
+  echo $?
+)"
+if ! ((x >= 4)); then
   print_err_msg "Getopt is not GNU!" 4
 fi
 
@@ -323,7 +323,7 @@ PARAM=$(getopt -o "ho:n:tv:pi:g:a:s:r:G:" -l "help,output:,nsfw:,termux,view:,pr
 
 # check if getopt failed for some reason
 PARAM_RC="$?"
-[[ "$PARAM_RC" != "0" ]] && \
+[[ "$PARAM_RC" != "0" ]] &&
   print_err_msg "Failed to parse parameters!" 5
 
 # API
@@ -389,8 +389,10 @@ VIEW_OPT=""
 VIEW_VALID=(
   c
   s
+  k
   chafa
   sixel
+  kitty
 )
 
 TAG=0
@@ -479,265 +481,264 @@ TERMUX=0
 while true; do
   case "$1" in
 
-    --raw)
-      RAW_URL=1
-      shift
-      continue
-      ;;
+  --raw)
+    RAW_URL=1
+    shift
+    continue
+    ;;
 
-    --json)
-      SHOW_JSON=1
-      shift
-      continue
-      ;;
+  --json)
+    SHOW_JSON=1
+    shift
+    continue
+    ;;
 
-    --print-var)
-      PRINT_INT_VAR=1
+  --print-var)
+    PRINT_INT_VAR=1
 
-      INT_VAR="$2"
-      typeset -n NAME_VAR="$2"
-      
-      shift 2
-      continue
-      ;;
+    INT_VAR="$2"
+    typeset -n NAME_VAR="$2"
 
+    shift 2
+    continue
+    ;;
 
-    -h|--help)
-      print_help
+  -h | --help)
+    print_help
+    exit 0
+    ;;
+
+  -o | --output)
+    OUTPUT=1
+    case "$2" in
+    -h | --help)
+      print_output_help
       exit 0
       ;;
+    esac
+    OUTPUT_NAME="$2"
+    shift 2
+    continue
+    ;;
 
-    -o|--output)
-      OUTPUT=1
-      case "$2" in
-        -h|--help)
-          print_output_help
-          exit 0
-          ;;
-      esac
-      OUTPUT_NAME="$2"
+  -n | --nsfw)
+    NSFW=1
+    case "$2" in
+    h | -h | help | --help)
+      print_nsfw_help
+      exit 0
+      ;;
+    *)
+      if nsfw_valid "$2"; then
+        NSFW_OPT="$2"
+        shift 2
+        continue
+      else
+        print_err_msg "Failed to parse arguments! Unknown option: $2" 5
+      fi
+      ;;
+    esac
+    ;;
+
+  -v | --view)
+    VIEW=1
+    case "$2" in
+    h | -h | help | --help)
+      print_view_help
+      exit 0
+      ;;
+    *)
+      if view_valid "$2"; then
+        VIEW_OPT="$2"
+        shift 2
+        continue
+      else
+        print_err_msg "Failed to parse arguments! Unknown option: $2" 5
+      fi
+      ;;
+    esac
+    ;;
+
+  --chafa-format)
+    CHAFA=1
+    case "$2" in
+    h | -h | help | --help)
+      print_chafa_format_help
+      exit 0
+      ;;
+    *)
+      if chafa_valid "$2"; then
+        CHAFA_OPT="$2"
+        shift 2
+        continue
+      else
+        print_err_msg "Failed to parse arguments! Unknown option: $2" 5
+      fi
+      ;;
+    esac
+    ;;
+
+  -t | --termux)
+    TERMUX=1
+    shift
+    continue
+    ;;
+
+  -p | --print)
+    PRINT=1
+    shift
+    continue
+    ;;
+
+  --no-print)
+    DEL_PRINT=1
+    shift
+    continue
+    ;;
+
+  -i | --id)
+    USE_ID=1
+    case "$2" in
+    h | -h | help | --help)
+      print_id_help
+      exit 0
+      ;;
+    *)
+      ID_OPT="$2"
       shift 2
       continue
       ;;
+    esac
+    ;;
 
-    -n|--nsfw)
-      NSFW=1
-        case "$2" in
-          h|-h|help|--help)
-            print_nsfw_help
-            exit 0
-            ;;
-          *)
-            if nsfw_valid "$2"; then
-              NSFW_OPT="$2"
-              shift 2
-              continue
-            else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
-            fi
-            ;;
-        esac
-      ;;
-
-    -v|--view)
-      VIEW=1
-        case "$2" in
-          h|-h|help|--help)
-            print_view_help
-            exit 0
-            ;;
-          *)
-            if view_valid "$2"; then
-              VIEW_OPT="$2"
-              shift 2
-              continue
-            else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
-            fi
-            ;;
-        esac
-      ;;
-
-    --chafa-format)
-      CHAFA=1
-        case "$2" in
-          h|-h|help|--help)
-            print_chafa_format_help
-            exit 0
-            ;;
-          *)
-            if chafa_valid "$2"; then
-              CHAFA_OPT="$2"
-              shift 2
-              continue
-            else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
-            fi
-            ;;
-        esac
-        ;;
-
-    -t|--termux)
-      TERMUX=1
-      shift
-      continue
-      ;;
-
-    -p|--print)
-      PRINT=1
-      shift
-      continue
-      ;;
-
-    --no-print)
-      DEL_PRINT=1
-      shift
-      continue
-      ;;
-
-    -i|--id)
-      USE_ID=1
-      case "$2" in
-        h|-h|help|--help)
-          print_id_help
-          exit 0
-          ;;
-        *)
-          ID_OPT="$2"
-          shift 2
-          continue
-          ;;
-          esac
-        ;;
-
-      -g|--tag)
-        TAG=1
-        case "$2" in
-          h|-h|help|--help)
-            print_tag_help
-            exit 0
-            ;;
-          *)
-            if tag_valid "$2"; then
-              TAG_OPTS+=("$2")
-              shift 2
-              continue
-            else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
-            fi
-            ;;
-        esac
-        ;;
-
-      -a|--type)
-        TYPE=1
-        case "$2" in
-          h|-h|help|--help)
-            print_type_help
-            exit 0
-            ;;
-          *)
-            if type_valid "$2"; then
-              TYPE_OPT="$2"
-              shift 2
-              continue
-            else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
-            fi
-            ;;
-          esac
-        ;;
-
-      -s|--sort)
-        SORT=1
-        case "$2" in
-          h|-h|help|--help)
-            print_sort_help
-            exit 0
-            ;;
-          *)
-            if sort_valid "$2"; then
-              SORT_OPT="$2"
-              shift 2
-              continue
-            else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
-            fi
-            ;;
-          esac
-        ;;
-
-      -r|--orientation)
-        ORIENTATION=1
-        case "$2" in
-          h|-h|help|--help)
-            print_orientation_help
-            exit 0
-            ;;
-          *)
-            if orientation_valid "$2"; then
-              ORIENTATION_OPT="$2"
-              shift 2
-              continue
-            else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
-            fi
-            ;;
-          esac
-        ;;
-
-      -G|--exclude)
-        EXCLUDE=1
-        case "$2" in
-          h|-h|help|--help)
-            print_exclude_help
-            exit 0
-            ;;
-          *)
-            if tag_valid "$2"; then
-              EXCLUDE_OPTS+=("$2")
-              shift 2
-              continue
-            else
-              print_err_msg "Failed to parse arguments! Unknown option: $2" 5
-            fi
-            ;;
-        esac
-        ;;
-
-      --unihelp)
-        print_help
-        echo "--------------------------------"
-        print_nsfw_help
-        echo "--------------------------------"
-        print_view_help
-        echo "--------------------------------"
-        print_output_help
-        echo "--------------------------------"
-        print_id_help
-        echo "--------------------------------"
-        print_tag_help
-        echo "--------------------------------"
-        print_exclude_help
-        echo "--------------------------------"
-        print_type_help
-        echo "--------------------------------"
-        print_sort_help
-        echo "--------------------------------"
-        print_orientation_help
-        echo "--------------------------------"
-        print_chafa_format_help
-        echo "--------------------------------"
-        exit 0
-        ;;
-
-    --)
-      shift
-      break
+  -g | --tag)
+    TAG=1
+    case "$2" in
+    h | -h | help | --help)
+      print_tag_help
+      exit 0
       ;;
     *)
-      print_err_msg "Failed to parse arguments! Unknown option: $1" 5
+      if tag_valid "$2"; then
+        TAG_OPTS+=("$2")
+        shift 2
+        continue
+      else
+        print_err_msg "Failed to parse arguments! Unknown option: $2" 5
+      fi
       ;;
+    esac
+    ;;
+
+  -a | --type)
+    TYPE=1
+    case "$2" in
+    h | -h | help | --help)
+      print_type_help
+      exit 0
+      ;;
+    *)
+      if type_valid "$2"; then
+        TYPE_OPT="$2"
+        shift 2
+        continue
+      else
+        print_err_msg "Failed to parse arguments! Unknown option: $2" 5
+      fi
+      ;;
+    esac
+    ;;
+
+  -s | --sort)
+    SORT=1
+    case "$2" in
+    h | -h | help | --help)
+      print_sort_help
+      exit 0
+      ;;
+    *)
+      if sort_valid "$2"; then
+        SORT_OPT="$2"
+        shift 2
+        continue
+      else
+        print_err_msg "Failed to parse arguments! Unknown option: $2" 5
+      fi
+      ;;
+    esac
+    ;;
+
+  -r | --orientation)
+    ORIENTATION=1
+    case "$2" in
+    h | -h | help | --help)
+      print_orientation_help
+      exit 0
+      ;;
+    *)
+      if orientation_valid "$2"; then
+        ORIENTATION_OPT="$2"
+        shift 2
+        continue
+      else
+        print_err_msg "Failed to parse arguments! Unknown option: $2" 5
+      fi
+      ;;
+    esac
+    ;;
+
+  -G | --exclude)
+    EXCLUDE=1
+    case "$2" in
+    h | -h | help | --help)
+      print_exclude_help
+      exit 0
+      ;;
+    *)
+      if tag_valid "$2"; then
+        EXCLUDE_OPTS+=("$2")
+        shift 2
+        continue
+      else
+        print_err_msg "Failed to parse arguments! Unknown option: $2" 5
+      fi
+      ;;
+    esac
+    ;;
+
+  --unihelp)
+    print_help
+    echo "--------------------------------"
+    print_nsfw_help
+    echo "--------------------------------"
+    print_view_help
+    echo "--------------------------------"
+    print_output_help
+    echo "--------------------------------"
+    print_id_help
+    echo "--------------------------------"
+    print_tag_help
+    echo "--------------------------------"
+    print_exclude_help
+    echo "--------------------------------"
+    print_type_help
+    echo "--------------------------------"
+    print_sort_help
+    echo "--------------------------------"
+    print_orientation_help
+    echo "--------------------------------"
+    print_chafa_format_help
+    echo "--------------------------------"
+    exit 0
+    ;;
+
+  --)
+    shift
+    break
+    ;;
+  *)
+    print_err_msg "Failed to parse arguments! Unknown option: $1" 5
+    ;;
   esac
 done
 
@@ -785,7 +786,6 @@ fi
   }
 }
 
-
 # ------------------------------------------------------------------
 # # # # # # #
 #  LOGIC
@@ -805,9 +805,9 @@ else
 
   if [[ "$NSFW" == "1" ]]; then
     case "$NSFW_OPT" in
-      e|exclusive) QUERY_PARAMS+=("isNsfw=True") ;;
-      a|all|b|both) QUERY_PARAMS+=("isNsfw=All") ;;
-      n|none) QUERY_PARAMS+=("isNsfw=False") ;;
+    e | exclusive) QUERY_PARAMS+=("isNsfw=True") ;;
+    a | all | b | both) QUERY_PARAMS+=("isNsfw=All") ;;
+    n | none) QUERY_PARAMS+=("isNsfw=False") ;;
     esac
   fi
 
@@ -817,26 +817,26 @@ else
 
   if [[ "$TYPE" == "1" ]]; then
     case "$TYPE_OPT" in
-      a|animated) QUERY_PARAMS+=("isAnimated=True") ;;
-      s|static) QUERY_PARAMS+=("isAnimated=False") ;;
-      b|both|all) QUERY_PARAMS+=("isAnimated=All") ;;
+    a | animated) QUERY_PARAMS+=("isAnimated=True") ;;
+    s | static) QUERY_PARAMS+=("isAnimated=False") ;;
+    b | both | all) QUERY_PARAMS+=("isAnimated=All") ;;
     esac
   fi
 
   if [[ "$SORT" == "1" ]]; then
     case "$SORT_OPT" in
-      f|favorites|p|popular) QUERY_PARAMS+=("orderBy=Favorites") ;;
-      u|uploaded|n|newest) QUERY_PARAMS+=("orderBy=UploadedAt") ;;
-      r|random) QUERY_PARAMS+=("orderBy=Random") ;;
+    f | favorites | p | popular) QUERY_PARAMS+=("orderBy=Favorites") ;;
+    u | uploaded | n | newest) QUERY_PARAMS+=("orderBy=UploadedAt") ;;
+    r | random) QUERY_PARAMS+=("orderBy=Random") ;;
     esac
   fi
 
   if [[ "$ORIENTATION" == "1" ]]; then
     case "$ORIENTATION_OPT" in
-      l|landscape) QUERY_PARAMS+=("orientation=Landscape") ;;
-      p|portrait) QUERY_PARAMS+=("orientation=Portrait") ;;
-      s|square) QUERY_PARAMS+=("orientation=Square") ;;
-      a|all) QUERY_PARAMS+=("orientation=All") ;;
+    l | landscape) QUERY_PARAMS+=("orientation=Landscape") ;;
+    p | portrait) QUERY_PARAMS+=("orientation=Portrait") ;;
+    s | square) QUERY_PARAMS+=("orientation=Square") ;;
+    a | all) QUERY_PARAMS+=("orientation=All") ;;
     esac
   fi
 
@@ -845,7 +845,10 @@ else
   done
 
   if [[ ${#QUERY_PARAMS[@]} -gt 0 ]]; then
-    QUERY_STRING=$(IFS='&'; echo "${QUERY_PARAMS[*]}")
+    QUERY_STRING=$(
+      IFS='&'
+      echo "${QUERY_PARAMS[*]}"
+    )
     REQUEST_URL="${WAIFU_URL}?${QUERY_STRING}"
   else
     REQUEST_URL="$WAIFU_URL"
@@ -857,8 +860,7 @@ else
   IMAGE_URL=$(printf '%s' "$WAIFU_JSON" | jq -r ".items[0].url")
 fi
 
-
-[[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" || ! "$IMAGE_URL" =~ ^https:\/\/cdn\.waifu\.im\/ ]] && \
+[[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" || ! "$IMAGE_URL" =~ ^https:\/\/cdn\.waifu\.im\/ ]] &&
   print_err_msg "Failed to fetch valid image data!" 6
 
 # save to file
@@ -887,37 +889,45 @@ fi
 if [[ "$CHAFA" == "1" ]]; then
   VIEW=0
   case "$CHAFA_OPT" in
-    iterm)
-      curl -s "$IMAGE_URL" | chafa --format iterm
-      ;;
-    kitty)
-      curl -s "$IMAGE_URL" | chafa --format kitty
-      ;;
-    sixels)
-      curl -s "$IMAGE_URL" | chafa --format sixels
-      ;;
-    symbols)
-      curl -s "$IMAGE_URL" | chafa --format symbols
-      ;;
-    esac
+  iterm)
+    curl -s "$IMAGE_URL" | chafa --format iterm
+    ;;
+  kitty)
+    curl -s "$IMAGE_URL" | chafa --format kitty
+    ;;
+  sixels)
+    curl -s "$IMAGE_URL" | chafa --format sixels
+    ;;
+  symbols)
+    curl -s "$IMAGE_URL" | chafa --format symbols
+    ;;
+  esac
 fi
 # view with chafa
 if [[ "$VIEW" == "1" ]]; then
   case "$VIEW_OPT" in
-    c|chafa)
-      command -v chafa &>/dev/null || {
+  c | chafa)
+    command -v chafa &>/dev/null || {
       print_err_msg "Missing command for flag -vc: chafa" 3
-      }
-      curl -s "$IMAGE_URL" | chafa
-      ;;
+    }
+    curl -s "$IMAGE_URL" | chafa
+    ;;
 
-    s|sixel)
-      command -v img2sixel &>/dev/null || {
+  s | sixel)
+    command -v img2sixel &>/dev/null || {
       print_err_msg "Missing command for flag -vs: img2sixel" 3
-      }
+    }
 
-      curl -s "$IMAGE_URL" | img2sixel
-      ;;
+    curl -s "$IMAGE_URL" | img2sixel
+    ;;
+
+  k | kitty)
+    command -v kitten &>/dev/null || {
+      print_err_msg "Missing command for flag -vk: kitten" 3
+    }
+
+    kitty +kitten icat "$(waifu --print-var IMAGE_URL)"
+    ;;
   esac
 fi
 
